@@ -17,7 +17,8 @@ var (
 )
 
 const (
-	NEW_LINE string = "\n"
+	NEW_LINE   string = "\n"
+	ERROR_WORD string = ". error: "
 )
 
 func Info(msg string) {
@@ -30,11 +31,11 @@ func Debug(msg string) {
 	}
 }
 
-func Error(msg string) {
-	stderrFile.Write([]byte(time.Now().Format(TimeFormat) + ErrorTitle + msg + NEW_LINE))
+func Error(desc string, err error) {
+	stderrFile.Write([]byte(time.Now().Format(TimeFormat) + ErrorTitle + desc + ERROR_WORD + err.Error() + NEW_LINE))
 }
 
-func Fatal(msg string) {
-	stderrFile.Write([]byte(time.Now().Format(TimeFormat) + FatalTitle + msg + NEW_LINE))
+func Fatal(desc string, err error) {
+	stderrFile.Write([]byte(time.Now().Format(TimeFormat) + FatalTitle + desc + ERROR_WORD + err.Error() + NEW_LINE))
 	os.Exit(1)
 }

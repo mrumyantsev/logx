@@ -1,2 +1,2 @@
-2023-09-22T15:01:31+03:00 ERR error message
-2023-09-22T15:01:31+03:00 FTL fatal message
+2023-09-22T17:12:21+03:00 ERR error description. error: errors happens
+2023-09-22T17:12:21+03:00 FTL fatal error description. error: fatal errors happens
