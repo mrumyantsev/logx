@@ -24,10 +24,12 @@ var (
 	stderrFile        *os.File              = os.Stderr
 	writers           *map[string]LogWriter = nil
 	writer            LogWriter             = nil
-	isWriterExists    bool                  = false
 	writersBeforeExit int                   = 0
+	isWriterExists    bool                  = false
+	isFatalLog        bool                  = false
 	logMsg            *logMessage           = &logMessage{}
 
+	ExitStatusCodeWhenFatal int    = 1
 	IsEnableDebugLogs       bool   = true
 	ItemSeparator           string = " "
 	LineEnding              string = "\n"
@@ -36,7 +38,6 @@ var (
 	ErrorMessageType        string = "ERR"
 	FatalMessageType        string = "FTL"
 	TimeFormat              string = "2006-01-02T15:04:05-07:00"
-	ExitStatusCodeWhenFatal int    = 1
 )
 
 func RegisterWriter(name string, w LogWriter) {
@@ -140,6 +141,8 @@ func Fatal(desc string, err error) *logMessage {
 		os.Exit(ExitStatusCodeWhenFatal)
 	}
 
+	isFatalLog = true
+
 	return logMsg
 }
 
@@ -155,10 +158,12 @@ func (l *logMessage) WriteTo(writerName string) *logMessage {
 
 	writer.WriteLog(l.datetime, *l.messageType, *l.message)
 
-	writersBeforeExit--
+	if isFatalLog {
+		writersBeforeExit--
 
-	if writersBeforeExit <= 0 {
-		os.Exit(ExitStatusCodeWhenFatal)
+		if writersBeforeExit <= 0 {
+			os.Exit(ExitStatusCodeWhenFatal)
+		}
 	}
 
 	return l
