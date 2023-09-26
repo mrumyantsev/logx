@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	WRITTEN_FILE_EXAMPLE     string = "writing to %s:\ntime: %s, type: %s, msg: %s"
-	WRITTEN_DATABASE_EXAMPLE string = "writing to %s:\n| %s | %s | %s |"
+	WRITTEN_FILE_EXAMPLE     string = "dest: %s, time: %s, type: %s, msg: %s"
+	WRITTEN_DATABASE_EXAMPLE string = "| %s | %s | %s | %s |"
 )
 
 type FileController struct {
@@ -42,16 +42,27 @@ func main() {
 	mySql := &DatabaseController{"MySQL"}
 	postgreSql := &DatabaseController{"PostgreSQL"}
 
-	log.RegisterWriter("file", file)
 	log.RegisterWriter("db1", mySql)
 	log.RegisterWriter("db2", postgreSql)
 
-	log.Info("info message")
+	log.Info("info message").
+		WriteTo("file").
+		WriteTo("db1").
+		WriteTo("db2")
 
 	log.Debug("debug message").
-		WriteTo("file")
+		WriteTo("file").
+		WriteTo("db1").
+		WriteTo("db2")
 
-	log.Error("error description", errors.New("errors happens"))
+	log.RegisterWriter("file", file)
+
+	log.Error("error description", errors.New("errors happens")).
+		WriteTo("file").
+		WriteTo("db1").
+		WriteTo("db2")
+
+	log.UnregisterWriter("db1")
 
 	log.Fatal("fatal error description", errors.New("fatal errors happens")).
 		WriteTo("file").

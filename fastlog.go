@@ -150,7 +150,7 @@ func (l *logMessage) WriteTo(writerName string) *logMessage {
 
 	writer, isWriterExists = (*writers)[writerName]
 	if !isWriterExists {
-		return nil
+		return l
 	}
 
 	writer.WriteLog(l.datetime, *l.messageType, *l.message)
