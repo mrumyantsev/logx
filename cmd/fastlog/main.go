@@ -35,6 +35,9 @@ func (d *DatabaseController) WriteLog(datetime string, messageType string, messa
 }
 
 func main() {
+	log.ExitStatusCodeWhenFatal = 123
+	log.IsEnableDebugLogs = false
+
 	file := &FileController{"./non-ordinary-logs.txt"}
 	mySql := &DatabaseController{"MySQL"}
 	postgreSql := &DatabaseController{"PostgreSQL"}
@@ -44,7 +47,10 @@ func main() {
 	log.RegisterWriter("db2", postgreSql)
 
 	log.Info("info message")
-	log.Debug("debug message")
+
+	log.Debug("debug message").
+		WriteTo("file")
+
 	log.Error("error description", errors.New("errors happens"))
 
 	log.Fatal("fatal error description", errors.New("fatal errors happens")).

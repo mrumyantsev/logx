@@ -142,6 +142,10 @@ func Fatal(desc string, err error) *logMessage {
 }
 
 func (l *logMessage) WriteTo(writerName string) *logMessage {
+	if l == nil {
+		return nil
+	}
+
 	(*writers)[writerName].WriteLog(l.datetime, *l.messageType, *l.message)
 
 	writersBeforeExit--
