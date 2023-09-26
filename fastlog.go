@@ -23,8 +23,10 @@ var (
 	stdoutFile        *os.File              = os.Stdout
 	stderrFile        *os.File              = os.Stderr
 	writers           *map[string]LogWriter = nil
-	logMsg            *logMessage           = &logMessage{}
+	writer            LogWriter             = nil
+	isWriterExists    bool                  = false
 	writersBeforeExit int                   = 0
+	logMsg            *logMessage           = &logMessage{}
 
 	IsEnableDebugLogs       bool   = true
 	ItemSeparator           string = " "
@@ -142,11 +144,16 @@ func Fatal(desc string, err error) *logMessage {
 }
 
 func (l *logMessage) WriteTo(writerName string) *logMessage {
-	if l == nil {
+	if (l == nil) || (writers == nil) {
 		return nil
 	}
 
-	(*writers)[writerName].WriteLog(l.datetime, *l.messageType, *l.message)
+	writer, isWriterExists = (*writers)[writerName]
+	if !isWriterExists {
+		return nil
+	}
+
+	writer.WriteLog(l.datetime, *l.messageType, *l.message)
 
 	writersBeforeExit--
 
