@@ -21,20 +21,21 @@ const (
 )
 
 var (
-	stdoutFile          *os.File    = os.Stdout
-	stderrFile          *os.File    = os.Stderr
-	fileLogWriter       LogWriter   = nil
-	databaseLogWriter   LogWriter   = nil
-	logMsg              *logMessage = &logMessage{}
-	IsEnableDebugLogs   bool        = true
-	ItemSeparator       string      = " "
-	LineEnding          string      = "\n"
-	InfoMessageType     string      = "INF"
-	DebugMessageType    string      = "DBG"
-	ErrorMessageType    string      = "ERR"
-	FatalMessageType    string      = "FTL"
-	TimeFormat          string      = "2006-01-02T15:04:05-07:00"
-	FatalExitStatusCode int         = 1
+	stdoutFile        *os.File    = os.Stdout
+	stderrFile        *os.File    = os.Stderr
+	fileLogWriter     LogWriter   = nil
+	databaseLogWriter LogWriter   = nil
+	logMsg            *logMessage = &logMessage{}
+
+	IsEnableDebugLogs   bool   = true
+	ItemSeparator       string = " "
+	LineEnding          string = "\n"
+	InfoMessageType     string = "INF"
+	DebugMessageType    string = "DBG"
+	ErrorMessageType    string = "ERR"
+	FatalMessageType    string = "FTL"
+	TimeFormat          string = "2006-01-02T15:04:05-07:00"
+	FatalExitStatusCode int    = 1
 )
 
 func SetFileLogWriter(w LogWriter) {
@@ -64,6 +65,10 @@ func Info(msg string) *logMessage {
 }
 
 func Debug(msg string) *logMessage {
+	if !IsEnableDebugLogs {
+		return nil
+	}
+
 	logMsg.datetime = time.Now().Format(TimeFormat)
 	logMsg.messageType = &DebugMessageType
 	logMsg.message = &msg
