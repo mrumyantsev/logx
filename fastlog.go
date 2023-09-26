@@ -6,7 +6,7 @@ import (
 )
 
 type logMessage struct {
-	datetime    *string
+	datetime    string
 	messageType *string
 	message     *string
 }
@@ -42,12 +42,12 @@ var (
 )
 
 func Info(msg string) {
-	*logMsg.datetime = time.Now().Format(TimeFormat)
-	*logMsg.messageType = InfoMessageType
-	*logMsg.message = msg
+	logMsg.datetime = time.Now().Format(TimeFormat)
+	logMsg.messageType = &InfoMessageType
+	logMsg.message = &msg
 
 	stdoutFile.Write(
-		[]byte(*logMsg.datetime +
+		[]byte(logMsg.datetime +
 			ItemSeparator +
 			*logMsg.messageType +
 			ItemSeparator +
@@ -58,12 +58,12 @@ func Info(msg string) {
 }
 
 func Debug(msg string) {
-	*logMsg.datetime = time.Now().Format(TimeFormat)
-	*logMsg.messageType = DebugMessageType
-	*logMsg.message = msg
+	logMsg.datetime = time.Now().Format(TimeFormat)
+	logMsg.messageType = &DebugMessageType
+	logMsg.message = &msg
 
 	stdoutFile.Write(
-		[]byte(*logMsg.datetime +
+		[]byte(logMsg.datetime +
 			ItemSeparator +
 			*logMsg.messageType +
 			ItemSeparator +
@@ -74,12 +74,16 @@ func Debug(msg string) {
 }
 
 func Error(desc string, err error) {
-	*logMsg.datetime = time.Now().Format(TimeFormat)
-	*logMsg.messageType = ErrorMessageType
-	*logMsg.message = desc + ERROR_WORD + err.Error()
+	var (
+		msg string = desc + ERROR_WORD + err.Error()
+	)
+
+	logMsg.datetime = time.Now().Format(TimeFormat)
+	logMsg.messageType = &ErrorMessageType
+	logMsg.message = &msg
 
 	stderrFile.Write(
-		[]byte(*logMsg.datetime +
+		[]byte(logMsg.datetime +
 			ItemSeparator +
 			*logMsg.messageType +
 			ItemSeparator +
@@ -90,12 +94,16 @@ func Error(desc string, err error) {
 }
 
 func Fatal(desc string, err error) {
-	*logMsg.datetime = time.Now().Format(TimeFormat)
-	*logMsg.messageType = FatalMessageType
-	*logMsg.message = desc + ERROR_WORD + err.Error()
+	var (
+		msg string = desc + ERROR_WORD + err.Error()
+	)
+
+	logMsg.datetime = time.Now().Format(TimeFormat)
+	logMsg.messageType = &FatalMessageType
+	logMsg.message = &msg
 
 	stderrFile.Write(
-		[]byte(*logMsg.datetime +
+		[]byte(logMsg.datetime +
 			ItemSeparator +
 			*logMsg.messageType +
 			ItemSeparator +
