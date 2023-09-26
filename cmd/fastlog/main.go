@@ -47,8 +47,6 @@ func main() {
 	log.Debug("debug message")
 	log.Error("error description", errors.New("errors happens"))
 
-	log.FatalExitStatusCode = 1337 // hack
-
 	log.Fatal("fatal error description", errors.New("fatal errors happens")).
 		WriteTo("file").
 		WriteTo("db1").

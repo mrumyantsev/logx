@@ -16,25 +16,25 @@ type logMessage struct {
 }
 
 const (
-	errorWord                 string = ". error: "
-	exitProhibitingStatusCode int    = 1337
+	errorWord string = ". error: "
 )
 
 var (
-	stdoutFile *os.File              = os.Stdout
-	stderrFile *os.File              = os.Stderr
-	writers    *map[string]LogWriter = nil
-	logMsg     *logMessage           = &logMessage{}
+	stdoutFile        *os.File              = os.Stdout
+	stderrFile        *os.File              = os.Stderr
+	writers           *map[string]LogWriter = nil
+	logMsg            *logMessage           = &logMessage{}
+	writersBeforeExit int                   = 0
 
-	IsEnableDebugLogs   bool   = true
-	ItemSeparator       string = " "
-	LineEnding          string = "\n"
-	InfoMessageType     string = "INF"
-	DebugMessageType    string = "DBG"
-	ErrorMessageType    string = "ERR"
-	FatalMessageType    string = "FTL"
-	TimeFormat          string = "2006-01-02T15:04:05-07:00"
-	FatalExitStatusCode int    = 1
+	IsEnableDebugLogs       bool   = true
+	ItemSeparator           string = " "
+	LineEnding              string = "\n"
+	InfoMessageType         string = "INF"
+	DebugMessageType        string = "DBG"
+	ErrorMessageType        string = "ERR"
+	FatalMessageType        string = "FTL"
+	TimeFormat              string = "2006-01-02T15:04:05-07:00"
+	ExitStatusCodeWhenFatal int    = 1
 )
 
 func RegisterWriter(name string, w LogWriter) {
@@ -43,10 +43,14 @@ func RegisterWriter(name string, w LogWriter) {
 	}
 
 	(*writers)[name] = w
+
+	writersBeforeExit++
 }
 
 func UnregisterWriter(name string) {
 	delete((*writers), name)
+
+	writersBeforeExit--
 }
 
 func Info(msg string) *logMessage {
@@ -130,8 +134,8 @@ func Fatal(desc string, err error) *logMessage {
 		),
 	)
 
-	if FatalExitStatusCode != exitProhibitingStatusCode {
-		logMsg.Exit(FatalExitStatusCode)
+	if writersBeforeExit <= 0 {
+		os.Exit(ExitStatusCodeWhenFatal)
 	}
 
 	return logMsg
@@ -140,9 +144,11 @@ func Fatal(desc string, err error) *logMessage {
 func (l *logMessage) WriteTo(writerName string) *logMessage {
 	(*writers)[writerName].WriteLog(l.datetime, *l.messageType, *l.message)
 
-	return l
-}
+	writersBeforeExit--
 
-func (l *logMessage) Exit(statusCode int) {
-	os.Exit(statusCode)
+	if writersBeforeExit <= 0 {
+		os.Exit(ExitStatusCodeWhenFatal)
+	}
+
+	return l
 }
