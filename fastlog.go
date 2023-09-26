@@ -106,6 +106,4 @@ func Fatal(desc string, err error) {
 			LineEnding,
 		),
 	)
-
-	os.Exit(1)
 }
