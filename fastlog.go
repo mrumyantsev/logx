@@ -21,11 +21,10 @@ const (
 )
 
 var (
-	stdoutFile        *os.File    = os.Stdout
-	stderrFile        *os.File    = os.Stderr
-	fileLogWriter     LogWriter   = nil
-	databaseLogWriter LogWriter   = nil
-	logMsg            *logMessage = &logMessage{}
+	stdoutFile *os.File              = os.Stdout
+	stderrFile *os.File              = os.Stderr
+	writers    *map[string]LogWriter = nil
+	logMsg     *logMessage           = &logMessage{}
 
 	IsEnableDebugLogs   bool   = true
 	ItemSeparator       string = " "
@@ -38,12 +37,16 @@ var (
 	FatalExitStatusCode int    = 1
 )
 
-func SetFileLogWriter(w LogWriter) {
-	fileLogWriter = w
+func RegisterWriter(name string, w LogWriter) {
+	if writers == nil {
+		writers = &map[string]LogWriter{}
+	}
+
+	(*writers)[name] = w
 }
 
-func SetDatabaseLogWriter(w LogWriter) {
-	databaseLogWriter = w
+func UnregisterWriter(name string) {
+	delete((*writers), name)
 }
 
 func Info(msg string) *logMessage {
@@ -134,14 +137,8 @@ func Fatal(desc string, err error) *logMessage {
 	return logMsg
 }
 
-func (l *logMessage) WriteLogToFile() *logMessage {
-	fileLogWriter.WriteLog(l.datetime, *l.messageType, *l.message)
-
-	return l
-}
-
-func (l *logMessage) WriteLogToDatabase() *logMessage {
-	databaseLogWriter.WriteLog(l.datetime, *l.messageType, *l.message)
+func (l *logMessage) WriteTo(writerName string) *logMessage {
+	(*writers)[writerName].WriteLog(l.datetime, *l.messageType, *l.message)
 
 	return l
 }
