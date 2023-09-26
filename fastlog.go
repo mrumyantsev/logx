@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type ILogWriter interface {
+type LogWriter interface {
 	WriteLog(datetime string, messageType string, message string) error
 }
 
@@ -16,39 +16,32 @@ type logMessage struct {
 }
 
 const (
-	WHITESPACE                   string = " "
-	NEW_LINE                     string = "\n"
-	ERROR_WORD                   string = ". error: "
-	INFO_MESSAGE_TYPE            string = "INF"
-	DEBUG_MESSAGE_TYPE           string = "DBG"
-	ERROR_MESSAGE_TYPE           string = "ERR"
-	FATAL_MESSAGE_TYPE           string = "FTL"
-	TIME_FORMAT                  string = "2006-01-02T15:04:05-07:00"
-	EXIT_PROHIBITING_STATUS_CODE int    = 1337
+	errorWord                 string = ". error: "
+	exitProhibitingStatusCode int    = 1337
 )
 
 var (
 	stdoutFile          *os.File    = os.Stdout
 	stderrFile          *os.File    = os.Stderr
-	fileLogWriter       ILogWriter  = nil
-	databaseLogWriter   ILogWriter  = nil
+	fileLogWriter       LogWriter   = nil
+	databaseLogWriter   LogWriter   = nil
 	logMsg              *logMessage = &logMessage{}
 	IsEnableDebugLogs   bool        = true
-	ItemSeparator       string      = WHITESPACE
-	LineEnding          string      = NEW_LINE
-	InfoMessageType     string      = INFO_MESSAGE_TYPE
-	DebugMessageType    string      = DEBUG_MESSAGE_TYPE
-	ErrorMessageType    string      = ERROR_MESSAGE_TYPE
-	FatalMessageType    string      = FATAL_MESSAGE_TYPE
-	TimeFormat          string      = TIME_FORMAT
+	ItemSeparator       string      = " "
+	LineEnding          string      = "\n"
+	InfoMessageType     string      = "INF"
+	DebugMessageType    string      = "DBG"
+	ErrorMessageType    string      = "ERR"
+	FatalMessageType    string      = "FTL"
+	TimeFormat          string      = "2006-01-02T15:04:05-07:00"
 	FatalExitStatusCode int         = 1
 )
 
-func SetFileLogWriter(w ILogWriter) {
+func SetFileLogWriter(w LogWriter) {
 	fileLogWriter = w
 }
 
-func SetDatabaseLogWriter(w ILogWriter) {
+func SetDatabaseLogWriter(w LogWriter) {
 	databaseLogWriter = w
 }
 
@@ -90,7 +83,7 @@ func Debug(msg string) *logMessage {
 
 func Error(desc string, err error) *logMessage {
 	var (
-		msg string = desc + ERROR_WORD + err.Error()
+		msg string = desc + errorWord + err.Error()
 	)
 
 	logMsg.datetime = time.Now().Format(TimeFormat)
@@ -112,7 +105,7 @@ func Error(desc string, err error) *logMessage {
 
 func Fatal(desc string, err error) *logMessage {
 	var (
-		msg string = desc + ERROR_WORD + err.Error()
+		msg string = desc + errorWord + err.Error()
 	)
 
 	logMsg.datetime = time.Now().Format(TimeFormat)
@@ -129,7 +122,7 @@ func Fatal(desc string, err error) *logMessage {
 		),
 	)
 
-	if FatalExitStatusCode != EXIT_PROHIBITING_STATUS_CODE {
+	if FatalExitStatusCode != exitProhibitingStatusCode {
 		logMsg.Exit(FatalExitStatusCode)
 	}
 
