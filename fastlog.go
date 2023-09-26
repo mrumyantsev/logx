@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+type ILogWriter interface {
+	WriteLog(datetime string, messageType string, message string) error
+}
+
 type logMessage struct {
 	datetime    string
 	messageType *string
@@ -25,6 +29,8 @@ const (
 var (
 	stdoutFile        *os.File    = os.Stdout
 	stderrFile        *os.File    = os.Stderr
+	fileLogWriter     ILogWriter  = nil
+	databaseLogWriter ILogWriter  = nil
 	IsEnableDebugLogs bool        = true
 	ItemSeparator     string      = WHITESPACE
 	LineEnding        string      = NEW_LINE
@@ -36,7 +42,15 @@ var (
 	logMsg            *logMessage = &logMessage{}
 )
 
-func Info(msg string) {
+func SetFileLogWriter(w ILogWriter) {
+	fileLogWriter = w
+}
+
+func SetDatabaseLogWriter(w ILogWriter) {
+	databaseLogWriter = w
+}
+
+func Info(msg string) *logMessage {
 	logMsg.datetime = time.Now().Format(TimeFormat)
 	logMsg.messageType = &InfoMessageType
 	logMsg.message = &msg
@@ -50,9 +64,11 @@ func Info(msg string) {
 			LineEnding,
 		),
 	)
+
+	return logMsg
 }
 
-func Debug(msg string) {
+func Debug(msg string) *logMessage {
 	logMsg.datetime = time.Now().Format(TimeFormat)
 	logMsg.messageType = &DebugMessageType
 	logMsg.message = &msg
@@ -66,9 +82,11 @@ func Debug(msg string) {
 			LineEnding,
 		),
 	)
+
+	return logMsg
 }
 
-func Error(desc string, err error) {
+func Error(desc string, err error) *logMessage {
 	var (
 		msg string = desc + ERROR_WORD + err.Error()
 	)
@@ -86,9 +104,11 @@ func Error(desc string, err error) {
 			LineEnding,
 		),
 	)
+
+	return logMsg
 }
 
-func Fatal(desc string, err error) {
+func Fatal(desc string, err error) *logMessage {
 	var (
 		msg string = desc + ERROR_WORD + err.Error()
 	)
@@ -106,4 +126,18 @@ func Fatal(desc string, err error) {
 			LineEnding,
 		),
 	)
+
+	return logMsg
+}
+
+func (l *logMessage) WriteLogToFile() *logMessage {
+	fileLogWriter.WriteLog(l.datetime, *l.messageType, *l.message)
+
+	return l
+}
+
+func (l *logMessage) WriteLogToDatabase() *logMessage {
+	databaseLogWriter.WriteLog(l.datetime, *l.messageType, *l.message)
+
+	return l
 }
