@@ -13,11 +13,6 @@ type logMessage struct {
 
 const (
 	WHITESPACE         string = " "
-	DOT                string = "."
-	COMMA              string = ","
-	SEMICOLON          string = ";"
-	COLON              string = ":"
-	TAB                string = "\t"
 	NEW_LINE           string = "\n"
 	ERROR_WORD         string = ". error: "
 	INFO_MESSAGE_TYPE  string = "INF"
