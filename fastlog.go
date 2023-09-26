@@ -16,30 +16,32 @@ type logMessage struct {
 }
 
 const (
-	WHITESPACE         string = " "
-	NEW_LINE           string = "\n"
-	ERROR_WORD         string = ". error: "
-	INFO_MESSAGE_TYPE  string = "INF"
-	DEBUG_MESSAGE_TYPE string = "DBG"
-	ERROR_MESSAGE_TYPE string = "ERR"
-	FATAL_MESSAGE_TYPE string = "FTL"
-	TIME_FORMAT        string = "2006-01-02T15:04:05-07:00"
+	WHITESPACE                   string = " "
+	NEW_LINE                     string = "\n"
+	ERROR_WORD                   string = ". error: "
+	INFO_MESSAGE_TYPE            string = "INF"
+	DEBUG_MESSAGE_TYPE           string = "DBG"
+	ERROR_MESSAGE_TYPE           string = "ERR"
+	FATAL_MESSAGE_TYPE           string = "FTL"
+	TIME_FORMAT                  string = "2006-01-02T15:04:05-07:00"
+	EXIT_PROHIBITING_STATUS_CODE int    = 1337
 )
 
 var (
-	stdoutFile        *os.File    = os.Stdout
-	stderrFile        *os.File    = os.Stderr
-	fileLogWriter     ILogWriter  = nil
-	databaseLogWriter ILogWriter  = nil
-	IsEnableDebugLogs bool        = true
-	ItemSeparator     string      = WHITESPACE
-	LineEnding        string      = NEW_LINE
-	InfoMessageType   string      = INFO_MESSAGE_TYPE
-	DebugMessageType  string      = DEBUG_MESSAGE_TYPE
-	ErrorMessageType  string      = ERROR_MESSAGE_TYPE
-	FatalMessageType  string      = FATAL_MESSAGE_TYPE
-	TimeFormat        string      = TIME_FORMAT
-	logMsg            *logMessage = &logMessage{}
+	stdoutFile          *os.File    = os.Stdout
+	stderrFile          *os.File    = os.Stderr
+	fileLogWriter       ILogWriter  = nil
+	databaseLogWriter   ILogWriter  = nil
+	logMsg              *logMessage = &logMessage{}
+	IsEnableDebugLogs   bool        = true
+	ItemSeparator       string      = WHITESPACE
+	LineEnding          string      = NEW_LINE
+	InfoMessageType     string      = INFO_MESSAGE_TYPE
+	DebugMessageType    string      = DEBUG_MESSAGE_TYPE
+	ErrorMessageType    string      = ERROR_MESSAGE_TYPE
+	FatalMessageType    string      = FATAL_MESSAGE_TYPE
+	TimeFormat          string      = TIME_FORMAT
+	FatalExitStatusCode int         = 1
 )
 
 func SetFileLogWriter(w ILogWriter) {
@@ -127,6 +129,10 @@ func Fatal(desc string, err error) *logMessage {
 		),
 	)
 
+	if FatalExitStatusCode != EXIT_PROHIBITING_STATUS_CODE {
+		logMsg.Exit(FatalExitStatusCode)
+	}
+
 	return logMsg
 }
 
@@ -140,4 +146,8 @@ func (l *logMessage) WriteLogToDatabase() *logMessage {
 	databaseLogWriter.WriteLog(l.datetime, *l.messageType, *l.message)
 
 	return l
+}
+
+func (l *logMessage) Exit(statusCode int) {
+	os.Exit(statusCode)
 }

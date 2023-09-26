@@ -49,6 +49,9 @@ func main() {
 	log.Info("info message")
 	log.Debug("debug message")
 	log.Error("error description", errors.New("errors happens"))
+
+	log.FatalExitStatusCode = 123
+
 	log.Fatal("fatal error description", errors.New("fatal errors happens")).
 		WriteLogToFile().
 		WriteLogToDatabase()
