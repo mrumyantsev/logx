@@ -27,7 +27,8 @@ var (
 	writersBeforeExit int                   = 0
 	isWriterExists    bool                  = false
 	isFatalLog        bool                  = false
-	logMsg            *logMessage           = &logMessage{}
+	errMsg            string
+	logMsg            *logMessage = &logMessage{}
 
 	ExitStatusCodeWhenFatal int    = 1
 	IsEnableDebugLogs       bool   = true
@@ -97,13 +98,11 @@ func Debug(msg string) *logMessage {
 }
 
 func Error(desc string, err error) *logMessage {
-	var (
-		msg string = desc + errorWord + err.Error()
-	)
+	errMsg = desc + errorWord + err.Error()
 
 	logMsg.datetime = time.Now().Format(TimeFormat)
 	logMsg.messageType = &ErrorMessageType
-	logMsg.message = &msg
+	logMsg.message = &errMsg
 
 	stderrFile.Write(
 		[]byte(logMsg.datetime +
@@ -119,13 +118,11 @@ func Error(desc string, err error) *logMessage {
 }
 
 func Fatal(desc string, err error) *logMessage {
-	var (
-		msg string = desc + errorWord + err.Error()
-	)
+	errMsg = desc + errorWord + err.Error()
 
 	logMsg.datetime = time.Now().Format(TimeFormat)
 	logMsg.messageType = &FatalMessageType
-	logMsg.message = &msg
+	logMsg.message = &errMsg
 
 	stderrFile.Write(
 		[]byte(logMsg.datetime +
