@@ -8,7 +8,7 @@ type LogWriter interface {
 }
 ```
 
-# Demonstraction
+# Demonstration
 
 Use the command below to see a console demo.
 
