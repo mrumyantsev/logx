@@ -1,4 +1,4 @@
-package fastlog
+package multilog
 
 import (
 	"os"

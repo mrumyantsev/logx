@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	log "github.com/mrumyantsev/fastlog"
+	log "github.com/mrumyantsev/multilog"
 )
 
 const (

@@ -1,3 +1,3 @@
 .PHONY: run
 run:
-	@go run ./cmd/fastlog/main.go
+	@go run ./cmd/multilog/main.go
