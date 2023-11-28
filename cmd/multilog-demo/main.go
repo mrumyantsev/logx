@@ -12,28 +12,6 @@ const (
 	_WRITTEN_DATABASE_EXAMPLE string = "| %s | %s | %s | %s |"
 )
 
-type FileController struct {
-	Destination string
-}
-
-func (f *FileController) WriteLog(datetime string, messageType string, message string) error {
-	fmt.Println(fmt.Sprintf(
-		_WRITTEN_FILE_EXAMPLE, f.Destination, datetime, messageType, message))
-
-	return nil
-}
-
-type DatabaseController struct {
-	Destination string
-}
-
-func (d *DatabaseController) WriteLog(datetime string, messageType string, message string) error {
-	fmt.Println(fmt.Sprintf(
-		_WRITTEN_DATABASE_EXAMPLE, d.Destination, datetime, messageType, message))
-
-	return nil
-}
-
 func main() {
 	log.ExitStatusCodeWhenFatal = 123
 	log.IsEnableDebugLogs = false
@@ -68,4 +46,26 @@ func main() {
 		WriteTo("file").
 		WriteTo("db1").
 		WriteTo("db2")
+}
+
+type FileController struct {
+	Destination string
+}
+
+func (f *FileController) WriteLog(datetime string, messageType string, message string) error {
+	fmt.Println(fmt.Sprintf(
+		_WRITTEN_FILE_EXAMPLE, f.Destination, datetime, messageType, message))
+
+	return nil
+}
+
+type DatabaseController struct {
+	Destination string
+}
+
+func (d *DatabaseController) WriteLog(datetime string, messageType string, message string) error {
+	fmt.Println(fmt.Sprintf(
+		_WRITTEN_DATABASE_EXAMPLE, d.Destination, datetime, messageType, message))
+
+	return nil
 }
