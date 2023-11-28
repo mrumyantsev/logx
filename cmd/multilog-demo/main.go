@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	WRITTEN_FILE_EXAMPLE     string = "dest: %s, time: %s, type: %s, msg: %s"
-	WRITTEN_DATABASE_EXAMPLE string = "| %s | %s | %s | %s |"
+	_WRITTEN_FILE_EXAMPLE     string = "dest: %s, time: %s, type: %s, msg: %s"
+	_WRITTEN_DATABASE_EXAMPLE string = "| %s | %s | %s | %s |"
 )
 
 type FileController struct {
@@ -18,7 +18,7 @@ type FileController struct {
 
 func (f *FileController) WriteLog(datetime string, messageType string, message string) error {
 	fmt.Println(fmt.Sprintf(
-		WRITTEN_FILE_EXAMPLE, f.Destination, datetime, messageType, message))
+		_WRITTEN_FILE_EXAMPLE, f.Destination, datetime, messageType, message))
 
 	return nil
 }
@@ -29,7 +29,7 @@ type DatabaseController struct {
 
 func (d *DatabaseController) WriteLog(datetime string, messageType string, message string) error {
 	fmt.Println(fmt.Sprintf(
-		WRITTEN_DATABASE_EXAMPLE, d.Destination, datetime, messageType, message))
+		_WRITTEN_DATABASE_EXAMPLE, d.Destination, datetime, messageType, message))
 
 	return nil
 }
