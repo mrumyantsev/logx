@@ -20,8 +20,6 @@ const (
 )
 
 var (
-	stdoutFile        *os.File              = os.Stdout
-	stderrFile        *os.File              = os.Stderr
 	writers           *map[string]LogWriter = nil
 	writer            LogWriter             = nil
 	writersBeforeExit int                   = 0
@@ -30,15 +28,19 @@ var (
 	errMsg            string
 	logMsg            *logMessage = &logMessage{}
 
-	ExitStatusCodeWhenFatal int    = 1
-	IsEnableDebugLogs       bool   = true
-	ItemSeparator           string = " "
-	LineEnding              string = "\n"
-	InfoMessageType         string = "INF"
-	DebugMessageType        string = "DBG"
-	ErrorMessageType        string = "ERR"
-	FatalMessageType        string = "FTL"
-	TimeFormat              string = "2006-01-02T15:04:05-07:00"
+	InfoOutputStream        *os.File = os.Stderr
+	DebugOutputStream       *os.File = os.Stderr
+	ErrorOutputStream       *os.File = os.Stderr
+	FatalOutputStream       *os.File = os.Stderr
+	ExitStatusCodeWhenFatal int      = 1
+	IsEnableDebugLogs       bool     = true
+	ItemSeparator           string   = " "
+	LineEnding              string   = "\n"
+	InfoMessageType         string   = "INF"
+	DebugMessageType        string   = "DBG"
+	ErrorMessageType        string   = "ERR"
+	FatalMessageType        string   = "FTL"
+	TimeFormat              string   = "2006-01-02T15:04:05-07:00"
 )
 
 func RegisterWriter(name string, w LogWriter) {
@@ -62,7 +64,7 @@ func Info(msg string) *logMessage {
 	logMsg.messageType = &InfoMessageType
 	logMsg.message = &msg
 
-	stdoutFile.Write(
+	InfoOutputStream.Write(
 		[]byte(logMsg.datetime +
 			ItemSeparator +
 			*logMsg.messageType +
@@ -84,7 +86,7 @@ func Debug(msg string) *logMessage {
 	logMsg.messageType = &DebugMessageType
 	logMsg.message = &msg
 
-	stdoutFile.Write(
+	DebugOutputStream.Write(
 		[]byte(logMsg.datetime +
 			ItemSeparator +
 			*logMsg.messageType +
@@ -104,7 +106,7 @@ func Error(desc string, err error) *logMessage {
 	logMsg.messageType = &ErrorMessageType
 	logMsg.message = &errMsg
 
-	stderrFile.Write(
+	ErrorOutputStream.Write(
 		[]byte(logMsg.datetime +
 			ItemSeparator +
 			*logMsg.messageType +
@@ -124,7 +126,7 @@ func Fatal(desc string, err error) *logMessage {
 	logMsg.messageType = &FatalMessageType
 	logMsg.message = &errMsg
 
-	stderrFile.Write(
+	FatalOutputStream.Write(
 		[]byte(logMsg.datetime +
 			ItemSeparator +
 			*logMsg.messageType +
