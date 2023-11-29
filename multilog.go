@@ -64,15 +64,7 @@ func Info(msg string) *logMessage {
 	logMsg.messageType = &InfoMessageType
 	logMsg.message = &msg
 
-	InfoOutputStream.Write(
-		[]byte(logMsg.datetime +
-			ItemSeparator +
-			*logMsg.messageType +
-			ItemSeparator +
-			*logMsg.message +
-			LineEnding,
-		),
-	)
+	writeToStream(InfoOutputStream)
 
 	return logMsg
 }
@@ -86,15 +78,7 @@ func Debug(msg string) *logMessage {
 	logMsg.messageType = &DebugMessageType
 	logMsg.message = &msg
 
-	DebugOutputStream.Write(
-		[]byte(logMsg.datetime +
-			ItemSeparator +
-			*logMsg.messageType +
-			ItemSeparator +
-			*logMsg.message +
-			LineEnding,
-		),
-	)
+	writeToStream(DebugOutputStream)
 
 	return logMsg
 }
@@ -106,15 +90,7 @@ func Error(desc string, err error) *logMessage {
 	logMsg.messageType = &ErrorMessageType
 	logMsg.message = &errMsg
 
-	ErrorOutputStream.Write(
-		[]byte(logMsg.datetime +
-			ItemSeparator +
-			*logMsg.messageType +
-			ItemSeparator +
-			*logMsg.message +
-			LineEnding,
-		),
-	)
+	writeToStream(ErrorOutputStream)
 
 	return logMsg
 }
@@ -126,15 +102,7 @@ func Fatal(desc string, err error) *logMessage {
 	logMsg.messageType = &FatalMessageType
 	logMsg.message = &errMsg
 
-	FatalOutputStream.Write(
-		[]byte(logMsg.datetime +
-			ItemSeparator +
-			*logMsg.messageType +
-			ItemSeparator +
-			*logMsg.message +
-			LineEnding,
-		),
-	)
+	writeToStream(FatalOutputStream)
 
 	if writersBeforeExit <= 0 {
 		os.Exit(ExitStatusCodeWhenFatal)
@@ -143,6 +111,18 @@ func Fatal(desc string, err error) *logMessage {
 	isFatalLog = true
 
 	return logMsg
+}
+
+func writeToStream(stream *os.File) {
+	stream.Write(
+		[]byte(logMsg.datetime +
+			ItemSeparator +
+			*logMsg.messageType +
+			ItemSeparator +
+			*logMsg.message +
+			LineEnding,
+		),
+	)
 }
 
 func (l *logMessage) WriteTo(writerName string) *logMessage {
