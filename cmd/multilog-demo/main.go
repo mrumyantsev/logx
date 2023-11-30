@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	_WRITTEN_FILE_EXAMPLE     string = "dest: %s, time: %s, type: %s, msg: %s"
+	_WRITTEN_FILE_EXAMPLE     string = "/ %s / %s / %s / %s /"
 	_WRITTEN_DATABASE_EXAMPLE string = "| %s | %s | %s | %s |"
 )
 
