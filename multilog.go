@@ -17,19 +17,19 @@ var (
 	logWriters   map[string]LogWriter = nil
 	logWriterErr error
 
-	InfoOutputStream        *os.File = os.Stderr
-	DebugOutputStream       *os.File = os.Stderr
-	ErrorOutputStream       *os.File = os.Stderr
-	FatalOutputStream       *os.File = os.Stderr
-	ExitStatusCodeWhenFatal int      = 1
-	IsEnableDebugLogs       bool     = true
-	ItemSeparator           string   = " "
-	LineEnding              string   = "\n"
-	InfoMessageType         string   = "INF"
-	DebugMessageType        string   = "DBG"
-	ErrorMessageType        string   = "ERR"
-	FatalMessageType        string   = "FTL"
-	TimeFormat              string   = "2006-01-02T15:04:05-07:00"
+	InfoOutputStream    *os.File = os.Stderr
+	DebugOutputStream   *os.File = os.Stderr
+	ErrorOutputStream   *os.File = os.Stderr
+	FatalOutputStream   *os.File = os.Stderr
+	FatalExitStatusCode int      = 1
+	IsEnableDebugLogs   bool     = true
+	ItemSeparator       string   = " "
+	LineEnding          string   = "\n"
+	InfoMessageType     string   = "INF"
+	DebugMessageType    string   = "DBG"
+	ErrorMessageType    string   = "ERR"
+	FatalMessageType    string   = "FTL"
+	TimeFormat          string   = "2006-01-02T15:04:05-07:00"
 )
 
 func RegisterWriter(name string, writer LogWriter) {
@@ -127,7 +127,7 @@ func Fatal(desc string, err error) {
 		)
 	}
 
-	os.Exit(ExitStatusCodeWhenFatal)
+	os.Exit(FatalExitStatusCode)
 }
 
 func writeToStream(

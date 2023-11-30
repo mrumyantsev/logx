@@ -13,7 +13,7 @@ const (
 )
 
 func main() {
-	log.ExitStatusCodeWhenFatal = 123
+	log.FatalExitStatusCode = 123
 	log.IsEnableDebugLogs = false
 
 	file := &FileController{"./non-ordinary-logs.txt"}
