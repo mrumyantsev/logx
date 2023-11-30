@@ -38,7 +38,7 @@ var (
 	TimeFormat          string   = "2006-01-02T15:04:05-07:00"
 )
 
-func RegisterWriter(id int, writer LogWriter) {
+func AddLogWriter(id int, writer LogWriter) {
 	if logWriters == nil {
 		logWriters = idmap.New()
 	}
@@ -46,15 +46,15 @@ func RegisterWriter(id int, writer LogWriter) {
 	logWriters.SetValue(id, writer)
 }
 
-func UnregisterWriter(id int) {
+func RemoveLogWriter(id int) {
 	logWriters.DeleteValue(id)
 }
 
-func EnableWriter(id int) {
+func EnableLogWriter(id int) {
 	logWriters.Enable(id)
 }
 
-func DisableWriter(id int) {
+func DisableLogWriter(id int) {
 	logWriters.Disable(id)
 }
 
