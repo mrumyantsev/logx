@@ -19,14 +19,17 @@ var (
 
 	InfoOutputStream    *os.File = os.Stderr
 	DebugOutputStream   *os.File = os.Stderr
+	WarnOutputStream    *os.File = os.Stderr
 	ErrorOutputStream   *os.File = os.Stderr
 	FatalOutputStream   *os.File = os.Stderr
 	FatalExitStatusCode int      = 1
 	IsEnableDebugLogs   bool     = true
+	IsEnableWarnLogs    bool     = true
 	ItemSeparator       string   = " "
 	LineEnding          string   = "\n"
 	InfoMessageType     string   = "INF"
 	DebugMessageType    string   = "DBG"
+	WarnMessageType     string   = "WRN"
 	ErrorMessageType    string   = "ERR"
 	FatalMessageType    string   = "FTL"
 	TimeFormat          string   = "2006-01-02T15:04:05-07:00"
@@ -75,6 +78,29 @@ func Debug(msg string) {
 		&DebugMessageType,
 		&msg,
 		DebugOutputStream,
+	)
+
+	if logWriters != nil {
+		writeToLogWriters(
+			&datetime,
+			&FatalMessageType,
+			&msg,
+		)
+	}
+}
+
+func Warn(msg string) {
+	if !IsEnableWarnLogs {
+		return
+	}
+
+	datetime := time.Now().Format(TimeFormat)
+
+	writeToStream(
+		&datetime,
+		&WarnMessageType,
+		&msg,
+		WarnOutputStream,
 	)
 
 	if logWriters != nil {
