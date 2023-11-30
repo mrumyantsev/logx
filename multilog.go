@@ -9,12 +9,6 @@ type LogWriter interface {
 	WriteLog(datetime string, messageType string, message string) error
 }
 
-type logMessage struct {
-	datetime    string
-	messageType *string
-	message     *string
-}
-
 const (
 	errorWord string = ". error: "
 )
@@ -25,8 +19,6 @@ var (
 	writersBeforeExit int                   = 0
 	isWriterExists    bool                  = false
 	isFatalLog        bool                  = false
-	errMsg            string
-	logMsg            *logMessage = &logMessage{}
 
 	InfoOutputStream        *os.File = os.Stderr
 	DebugOutputStream       *os.File = os.Stderr
@@ -59,68 +51,78 @@ func UnregisterWriter(name string) {
 	writersBeforeExit--
 }
 
-func Info(msg string) *logMessage {
-	logMsg.datetime = time.Now().Format(TimeFormat)
-	logMsg.messageType = &InfoMessageType
-	logMsg.message = &msg
+func Info(msg string) {
+	datetime := time.Now().Format(TimeFormat)
 
-	writeToStream(InfoOutputStream)
-
-	return logMsg
+	writeToStream(
+		&datetime,
+		&InfoMessageType,
+		&msg,
+		InfoOutputStream,
+	)
 }
 
-func Debug(msg string) *logMessage {
+func Debug(msg string) {
 	if !IsEnableDebugLogs {
-		return nil
+		return
 	}
 
-	logMsg.datetime = time.Now().Format(TimeFormat)
-	logMsg.messageType = &DebugMessageType
-	logMsg.message = &msg
+	datetime := time.Now().Format(TimeFormat)
 
-	writeToStream(DebugOutputStream)
-
-	return logMsg
+	writeToStream(
+		&datetime,
+		&DebugMessageType,
+		&msg,
+		DebugOutputStream,
+	)
 }
 
-func Error(desc string, err error) *logMessage {
-	errMsg = desc + errorWord + err.Error()
+func Error(desc string, err error) {
+	datetime := time.Now().Format(TimeFormat)
 
-	logMsg.datetime = time.Now().Format(TimeFormat)
-	logMsg.messageType = &ErrorMessageType
-	logMsg.message = &errMsg
+	desc = desc + errorWord + err.Error()
 
-	writeToStream(ErrorOutputStream)
-
-	return logMsg
+	writeToStream(
+		&datetime,
+		&ErrorMessageType,
+		&desc,
+		ErrorOutputStream,
+	)
 }
 
-func Fatal(desc string, err error) *logMessage {
-	errMsg = desc + errorWord + err.Error()
+func Fatal(desc string, err error) {
+	datetime := time.Now().Format(TimeFormat)
 
-	logMsg.datetime = time.Now().Format(TimeFormat)
-	logMsg.messageType = &FatalMessageType
-	logMsg.message = &errMsg
+	desc = desc + errorWord + err.Error()
 
-	writeToStream(FatalOutputStream)
+	writeToStream(
+		&datetime,
+		&FatalMessageType,
+		&desc,
+		FatalOutputStream,
+	)
 
 	if writersBeforeExit <= 0 {
 		os.Exit(ExitStatusCodeWhenFatal)
 	}
 
 	isFatalLog = true
-
-	return logMsg
 }
 
-func writeToStream(stream *os.File) {
+func writeToStream(
+	datetime *string,
+	messageType *string,
+	message *string,
+	stream *os.File,
+) {
 	stream.Write(
-		[]byte(logMsg.datetime +
-			ItemSeparator +
-			*logMsg.messageType +
-			ItemSeparator +
-			*logMsg.message +
-			LineEnding,
+		[]byte(
+			*datetime +
+				ItemSeparator +
+				*messageType +
+				ItemSeparator +
+				*message +
+				LineEnding,
 		),
 	)
 }
