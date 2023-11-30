@@ -60,7 +60,7 @@ func Info(msg string) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&FatalMessageType,
+			&InfoMessageType,
 			&msg,
 		)
 	}
@@ -83,7 +83,7 @@ func Debug(msg string) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&FatalMessageType,
+			&DebugMessageType,
 			&msg,
 		)
 	}
@@ -106,7 +106,7 @@ func Warn(msg string) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&FatalMessageType,
+			&WarnMessageType,
 			&msg,
 		)
 	}
@@ -127,7 +127,7 @@ func Error(desc string, err error) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&FatalMessageType,
+			&ErrorMessageType,
 			&desc,
 		)
 	}
