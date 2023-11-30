@@ -37,6 +37,8 @@ func main() {
 
 	log.UnregisterWriter(_LWID_MYSQL)
 
+	log.DisableWriter(_LWID_FILE)
+
 	log.Fatal("fatal error description", errors.New("fatal errors happens"))
 }
 

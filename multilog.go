@@ -50,6 +50,14 @@ func UnregisterWriter(id int) {
 	logWriters.DeleteValue(id)
 }
 
+func EnableWriter(id int) {
+	logWriters.Enable(id)
+}
+
+func DisableWriter(id int) {
+	logWriters.Disable(id)
+}
+
 func Info(msg string) {
 	datetime := time.Now().Format(TimeFormat)
 
