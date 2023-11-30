@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/mrumyantsev/go-idmap"
 )
 
 type LogWriter interface {
@@ -15,7 +17,7 @@ const (
 )
 
 var (
-	logWriters   map[int]LogWriter = nil
+	logWriters   *idmap.IdMap = nil
 	logWriterErr error
 
 	InfoOutputStream    *os.File = os.Stderr
@@ -38,14 +40,14 @@ var (
 
 func RegisterWriter(id int, writer LogWriter) {
 	if logWriters == nil {
-		logWriters = map[int]LogWriter{}
+		logWriters = idmap.New()
 	}
 
-	logWriters[id] = writer
+	logWriters.SetValue(id, writer)
 }
 
 func UnregisterWriter(id int) {
-	delete(logWriters, id)
+	logWriters.DeleteValue(id)
 }
 
 func Info(msg string) {
@@ -180,8 +182,20 @@ func writeToLogWriters(
 	messageType *string,
 	message *string,
 ) {
-	for id, writer := range logWriters {
-		logWriterErr = writer.WriteLog(
+	var (
+		length    = logWriters.GetLength()
+		writer    interface{}
+		isEnabled bool
+	)
+
+	for id := 0; id < length; id++ {
+		writer, isEnabled = logWriters.GetValue(id)
+
+		if !isEnabled {
+			continue
+		}
+
+		logWriterErr = writer.(LogWriter).WriteLog(
 			datetime,
 			messageType,
 			message,
