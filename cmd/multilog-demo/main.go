@@ -23,29 +23,17 @@ func main() {
 	log.RegisterWriter("db1", mySql)
 	log.RegisterWriter("db2", postgreSql)
 
-	log.Info("info message").
-		WriteTo("file").
-		WriteTo("db1").
-		WriteTo("db2")
+	log.Info("info message")
 
-	log.Debug("debug message").
-		WriteTo("file").
-		WriteTo("db1").
-		WriteTo("db2")
+	log.Debug("debug message")
 
 	log.RegisterWriter("file", file)
 
-	log.Error("error description", errors.New("errors happens")).
-		WriteTo("file").
-		WriteTo("db1").
-		WriteTo("db2")
+	log.Error("error description", errors.New("errors happens"))
 
 	log.UnregisterWriter("db1")
 
-	log.Fatal("fatal error description", errors.New("fatal errors happens")).
-		WriteTo("file").
-		WriteTo("db1").
-		WriteTo("db2")
+	log.Fatal("fatal error description", errors.New("fatal errors happens"))
 }
 
 type FileController struct {

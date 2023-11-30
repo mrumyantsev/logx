@@ -14,11 +14,7 @@ const (
 )
 
 var (
-	writers           *map[string]LogWriter = nil
-	writer            LogWriter             = nil
-	writersBeforeExit int                   = 0
-	isWriterExists    bool                  = false
-	isFatalLog        bool                  = false
+	writers map[string]LogWriter = nil
 
 	InfoOutputStream        *os.File = os.Stderr
 	DebugOutputStream       *os.File = os.Stderr
@@ -35,20 +31,16 @@ var (
 	TimeFormat              string   = "2006-01-02T15:04:05-07:00"
 )
 
-func RegisterWriter(name string, w LogWriter) {
+func RegisterWriter(name string, lw LogWriter) {
 	if writers == nil {
-		writers = &map[string]LogWriter{}
+		writers = map[string]LogWriter{}
 	}
 
-	(*writers)[name] = w
-
-	writersBeforeExit++
+	writers[name] = lw
 }
 
 func UnregisterWriter(name string) {
-	delete((*writers), name)
-
-	writersBeforeExit--
+	delete(writers, name)
 }
 
 func Info(msg string) {
@@ -60,6 +52,14 @@ func Info(msg string) {
 		&msg,
 		InfoOutputStream,
 	)
+
+	if writers != nil {
+		writeToLogWriters(
+			&datetime,
+			&FatalMessageType,
+			&msg,
+		)
+	}
 }
 
 func Debug(msg string) {
@@ -75,6 +75,14 @@ func Debug(msg string) {
 		&msg,
 		DebugOutputStream,
 	)
+
+	if writers != nil {
+		writeToLogWriters(
+			&datetime,
+			&FatalMessageType,
+			&msg,
+		)
+	}
 }
 
 func Error(desc string, err error) {
@@ -88,6 +96,14 @@ func Error(desc string, err error) {
 		&desc,
 		ErrorOutputStream,
 	)
+
+	if writers != nil {
+		writeToLogWriters(
+			&datetime,
+			&FatalMessageType,
+			&desc,
+		)
+	}
 }
 
 func Fatal(desc string, err error) {
@@ -102,11 +118,15 @@ func Fatal(desc string, err error) {
 		FatalOutputStream,
 	)
 
-	if writersBeforeExit <= 0 {
-		os.Exit(ExitStatusCodeWhenFatal)
+	if writers != nil {
+		writeToLogWriters(
+			&datetime,
+			&FatalMessageType,
+			&desc,
+		)
 	}
 
-	isFatalLog = true
+	os.Exit(ExitStatusCodeWhenFatal)
 }
 
 func writeToStream(
@@ -127,25 +147,16 @@ func writeToStream(
 	)
 }
 
-func (l *logMessage) WriteTo(writerName string) *logMessage {
-	if (l == nil) || (writers == nil) {
-		return nil
+func writeToLogWriters(
+	datetime *string,
+	messageType *string,
+	message *string,
+) {
+	for _, writer := range writers {
+		writer.WriteLog(
+			*datetime,
+			*messageType,
+			*message,
+		)
 	}
-
-	writer, isWriterExists = (*writers)[writerName]
-	if !isWriterExists {
-		return l
-	}
-
-	writer.WriteLog(l.datetime, *l.messageType, *l.message)
-
-	if isFatalLog {
-		writersBeforeExit--
-
-		if writersBeforeExit <= 0 {
-			os.Exit(ExitStatusCodeWhenFatal)
-		}
-	}
-
-	return l
 }
