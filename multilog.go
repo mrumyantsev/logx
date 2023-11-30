@@ -1,6 +1,7 @@
 package multilog
 
 import (
+	"fmt"
 	"os"
 	"time"
 )
@@ -14,7 +15,7 @@ const (
 )
 
 var (
-	logWriters   map[string]LogWriter = nil
+	logWriters   map[int]LogWriter = nil
 	logWriterErr error
 
 	InfoOutputStream    *os.File = os.Stderr
@@ -35,16 +36,16 @@ var (
 	TimeFormat          string   = "2006-01-02T15:04:05-07:00"
 )
 
-func RegisterWriter(name string, writer LogWriter) {
+func RegisterWriter(id int, writer LogWriter) {
 	if logWriters == nil {
-		logWriters = map[string]LogWriter{}
+		logWriters = map[int]LogWriter{}
 	}
 
-	logWriters[name] = writer
+	logWriters[id] = writer
 }
 
-func UnregisterWriter(name string) {
-	delete(logWriters, name)
+func UnregisterWriter(id int) {
+	delete(logWriters, id)
 }
 
 func Info(msg string) {
@@ -179,7 +180,7 @@ func writeToLogWriters(
 	messageType *string,
 	message *string,
 ) {
-	for name, writer := range logWriters {
+	for id, writer := range logWriters {
 		logWriterErr = writer.WriteLog(
 			datetime,
 			messageType,
@@ -187,7 +188,10 @@ func writeToLogWriters(
 		)
 
 		if logWriterErr != nil {
-			Error("could not write to log writer \""+name+"\"", logWriterErr)
+			Error(
+				fmt.Sprintf("could not write to log writer with id=%d", id),
+				logWriterErr,
+			)
 		}
 	}
 }

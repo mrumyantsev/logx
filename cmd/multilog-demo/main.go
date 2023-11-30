@@ -10,6 +10,10 @@ import (
 const (
 	_WRITTEN_FILE_EXAMPLE     string = "/ %s / %s / %s / %s /"
 	_WRITTEN_DATABASE_EXAMPLE string = "| %s | %s | %s | %s |"
+
+	_LWID_MYSQL int = iota
+	_LWID_POSTGRESQL
+	_LWID_FILE
 )
 
 func main() {
@@ -20,18 +24,18 @@ func main() {
 	mySql := &DatabaseController{"MySQL"}
 	postgreSql := &DatabaseController{"PostgreSQL"}
 
-	log.RegisterWriter("db1", mySql)
-	log.RegisterWriter("db2", postgreSql)
+	log.RegisterWriter(_LWID_MYSQL, mySql)
+	log.RegisterWriter(_LWID_POSTGRESQL, postgreSql)
 
 	log.Info("info message")
 
 	log.Debug("debug message")
 
-	log.RegisterWriter("file", file)
+	log.RegisterWriter(_LWID_FILE, file)
 
 	log.Error("error description", errors.New("errors happens"))
 
-	log.UnregisterWriter("db1")
+	log.UnregisterWriter(_LWID_MYSQL)
 
 	log.Fatal("fatal error description", errors.New("fatal errors happens"))
 }
