@@ -6,7 +6,7 @@ import (
 )
 
 type LogWriter interface {
-	WriteLog(datetime string, messageType string, message string) error
+	WriteLog(datetime *string, messageType *string, message *string) error
 }
 
 const (
@@ -155,9 +155,9 @@ func writeToLogWriters(
 ) {
 	for name, writer := range logWriters {
 		logWriterErr = writer.WriteLog(
-			*datetime,
-			*messageType,
-			*message,
+			datetime,
+			messageType,
+			message,
 		)
 
 		if logWriterErr != nil {
