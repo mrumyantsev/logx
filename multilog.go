@@ -14,7 +14,8 @@ const (
 )
 
 var (
-	writers map[string]LogWriter = nil
+	logWriters   map[string]LogWriter = nil
+	logWriterErr error
 
 	InfoOutputStream        *os.File = os.Stderr
 	DebugOutputStream       *os.File = os.Stderr
@@ -31,16 +32,16 @@ var (
 	TimeFormat              string   = "2006-01-02T15:04:05-07:00"
 )
 
-func RegisterWriter(name string, lw LogWriter) {
-	if writers == nil {
-		writers = map[string]LogWriter{}
+func RegisterWriter(name string, writer LogWriter) {
+	if logWriters == nil {
+		logWriters = map[string]LogWriter{}
 	}
 
-	writers[name] = lw
+	logWriters[name] = writer
 }
 
 func UnregisterWriter(name string) {
-	delete(writers, name)
+	delete(logWriters, name)
 }
 
 func Info(msg string) {
@@ -53,7 +54,7 @@ func Info(msg string) {
 		InfoOutputStream,
 	)
 
-	if writers != nil {
+	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
 			&FatalMessageType,
@@ -76,7 +77,7 @@ func Debug(msg string) {
 		DebugOutputStream,
 	)
 
-	if writers != nil {
+	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
 			&FatalMessageType,
@@ -97,7 +98,7 @@ func Error(desc string, err error) {
 		ErrorOutputStream,
 	)
 
-	if writers != nil {
+	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
 			&FatalMessageType,
@@ -118,7 +119,7 @@ func Fatal(desc string, err error) {
 		FatalOutputStream,
 	)
 
-	if writers != nil {
+	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
 			&FatalMessageType,
@@ -152,11 +153,15 @@ func writeToLogWriters(
 	messageType *string,
 	message *string,
 ) {
-	for _, writer := range writers {
-		writer.WriteLog(
+	for name, writer := range logWriters {
+		logWriterErr = writer.WriteLog(
 			*datetime,
 			*messageType,
 			*message,
 		)
+
+		if logWriterErr != nil {
+			Error("could not write to log writer \""+name+"\"", logWriterErr)
+		}
 	}
 }
