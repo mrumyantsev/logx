@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	log "github.com/mrumyantsev/multilog"
+	"github.com/mrumyantsev/multilog"
+	"github.com/mrumyantsev/multilog/log"
 )
 
 const (
@@ -18,8 +19,8 @@ const (
 )
 
 func main() {
-	log.FatalExitStatusCode = 123
-	log.IsEnableDebugLogs = false
+	multilog.FatalExitStatusCode = 123
+	multilog.IsEnableDebugLogs = false
 
 	file := &FileController{"./non-ordinary-logs.txt"}
 	mySql := &DatabaseController{"MySQL"}
