@@ -14,32 +14,32 @@ const (
 )
 
 var (
-	logWriters   *idmap.IdMap = nil
-	logWriterErr error
+	writers   *idmap.IdMap = nil
+	writerErr error        = nil
 )
 
-type LogWriter interface {
+type Writer interface {
 	WriteLog(datetime time.Time, level string, message string) error
 }
 
-func AddLogWriter(id int, writer LogWriter) {
-	if logWriters == nil {
-		logWriters = idmap.New()
+func AddWriter(id int, writer Writer) {
+	if writers == nil {
+		writers = idmap.New()
 	}
 
-	logWriters.SetValue(id, writer)
+	writers.SetValue(id, writer)
 }
 
-func RemoveLogWriter(id int) {
-	logWriters.DeleteValue(id)
+func RemoveWriter(id int) {
+	writers.DeleteValue(id)
 }
 
-func EnableLogWriter(id int) {
-	logWriters.Enable(id)
+func EnableWriter(id int) {
+	writers.Enable(id)
 }
 
-func DisableLogWriter(id int) {
-	logWriters.Disable(id)
+func DisableWriter(id int) {
+	writers.Disable(id)
 }
 
 func Info(msg string) {
@@ -52,8 +52,8 @@ func Info(msg string) {
 		multilog.InfoOutputStream,
 	)
 
-	if logWriters != nil {
-		writeToLogWriters(
+	if writers != nil {
+		writeToWriters(
 			&datetime,
 			&multilog.InfoLevelText,
 			&msg,
@@ -75,8 +75,8 @@ func Debug(msg string) {
 		multilog.DebugOutputStream,
 	)
 
-	if logWriters != nil {
-		writeToLogWriters(
+	if writers != nil {
+		writeToWriters(
 			&datetime,
 			&multilog.DebugLevelText,
 			&msg,
@@ -98,8 +98,8 @@ func Warn(msg string) {
 		multilog.WarnOutputStream,
 	)
 
-	if logWriters != nil {
-		writeToLogWriters(
+	if writers != nil {
+		writeToWriters(
 			&datetime,
 			&multilog.WarnLevelText,
 			&msg,
@@ -119,8 +119,8 @@ func Error(desc string, err error) {
 		multilog.ErrorOutputStream,
 	)
 
-	if logWriters != nil {
-		writeToLogWriters(
+	if writers != nil {
+		writeToWriters(
 			&datetime,
 			&multilog.ErrorLevelText,
 			&desc,
@@ -140,8 +140,8 @@ func Fatal(desc string, err error) {
 		multilog.FatalOutputStream,
 	)
 
-	if logWriters != nil {
-		writeToLogWriters(
+	if writers != nil {
+		writeToWriters(
 			&datetime,
 			&multilog.FatalLevelText,
 			&desc,
@@ -169,34 +169,34 @@ func writeToStream(
 	)
 }
 
-func writeToLogWriters(
+func writeToWriters(
 	datetime *time.Time,
 	level *string,
 	message *string,
 ) {
 	var (
-		length    = logWriters.GetLength()
+		length    = writers.GetLength()
 		writer    interface{}
 		isEnabled bool
 	)
 
 	for id := 0; id < length; id++ {
-		writer, isEnabled = logWriters.GetValue(id)
+		writer, isEnabled = writers.GetValue(id)
 
 		if !isEnabled {
 			continue
 		}
 
-		logWriterErr = writer.(LogWriter).WriteLog(
+		writerErr = writer.(Writer).WriteLog(
 			*datetime,
 			*level,
 			*message,
 		)
 
-		if logWriterErr != nil {
+		if writerErr != nil {
 			Error(
 				fmt.Sprintf("could not write to log writer with id=%d", id),
-				logWriterErr,
+				writerErr,
 			)
 		}
 	}

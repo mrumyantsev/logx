@@ -26,20 +26,20 @@ func main() {
 	mySql := &DatabaseController{"MySQL"}
 	postgreSql := &DatabaseController{"PostgreSQL"}
 
-	log.AddLogWriter(_LWID_MYSQL, mySql)
-	log.AddLogWriter(_LWID_POSTGRESQL, postgreSql)
+	log.AddWriter(_LWID_MYSQL, mySql)
+	log.AddWriter(_LWID_POSTGRESQL, postgreSql)
 
 	log.Info("info message")
 
 	log.Debug("debug message")
 
-	log.AddLogWriter(_LWID_FILE, file)
+	log.AddWriter(_LWID_FILE, file)
 
 	log.Error("error description", errors.New("errors happens"))
 
-	log.RemoveLogWriter(_LWID_MYSQL)
+	log.RemoveWriter(_LWID_MYSQL)
 
-	log.DisableLogWriter(_LWID_FILE)
+	log.DisableWriter(_LWID_FILE)
 
 	log.Fatal("fatal error description", errors.New("fatal errors happens"))
 }
