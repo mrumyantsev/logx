@@ -19,8 +19,13 @@ const (
 )
 
 func main() {
-	multilog.FatalExitStatusCode = 123
-	multilog.IsEnableDebugLogs = false
+	loggerCfg := &multilog.Config{
+		IsEnableDebugLogs:   false,
+		IsEnableWarnLogs:    false,
+		FatalExitStatusCode: 123,
+	}
+
+	log.ApplyConfig(loggerCfg)
 
 	file := &FileController{"./non-ordinary-logs.txt"}
 	mySql := &DatabaseController{"MySQL"}

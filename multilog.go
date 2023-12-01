@@ -4,26 +4,26 @@ import (
 	"os"
 )
 
-// Multilog configurational variables.
-var (
-	InfoOutputStream  *os.File = os.Stderr
-	DebugOutputStream *os.File = os.Stderr
-	WarnOutputStream  *os.File = os.Stderr
-	ErrorOutputStream *os.File = os.Stderr
-	FatalOutputStream *os.File = os.Stderr
+// Multilog configurational structure.
+type Config struct {
+	InfoOutputStream  *os.File
+	DebugOutputStream *os.File
+	WarnOutputStream  *os.File
+	ErrorOutputStream *os.File
+	FatalOutputStream *os.File
 
-	IsEnableDebugLogs bool = true
-	IsEnableWarnLogs  bool = true
+	IsEnableDebugLogs bool
+	IsEnableWarnLogs  bool
 
-	FatalExitStatusCode int = 1
+	FatalExitStatusCode int
 
-	TimeFormat string = "2006-01-02T15:04:05-07:00"
+	TimeFormat string
 
-	ItemSeparatorText string = " "
-	LineEndingText    string = "\n"
-	InfoLevelText     string = "INF"
-	DebugLevelText    string = "DBG"
-	WarnLevelText     string = "WRN"
-	ErrorLevelText    string = "ERR"
-	FatalLevelText    string = "FTL"
-)
+	ItemSeparatorText string
+	LineEndingText    string
+	InfoLevelText     string
+	DebugLevelText    string
+	WarnLevelText     string
+	ErrorLevelText    string
+	FatalLevelText    string
+}

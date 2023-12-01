@@ -7,6 +7,7 @@ import (
 
 	"github.com/mrumyantsev/go-idmap"
 	"github.com/mrumyantsev/multilog"
+	"github.com/mrumyantsev/multilog/defaults"
 )
 
 const (
@@ -14,6 +15,28 @@ const (
 )
 
 var (
+	config *multilog.Config = &multilog.Config{
+		InfoOutputStream:  os.Stderr,
+		DebugOutputStream: os.Stderr,
+		WarnOutputStream:  os.Stderr,
+		ErrorOutputStream: os.Stderr,
+		FatalOutputStream: os.Stderr,
+
+		IsEnableDebugLogs: true,
+		IsEnableWarnLogs:  true,
+
+		FatalExitStatusCode: 1,
+
+		TimeFormat: defaults.TIME_FORMAT,
+
+		ItemSeparatorText: defaults.ITEM_SEPARATOR_TEXT,
+		LineEndingText:    defaults.LINE_ENDING_TEXT,
+		InfoLevelText:     defaults.INFO_LEVEL_TEXT,
+		DebugLevelText:    defaults.DEBUG_LEVEL_TEXT,
+		WarnLevelText:     defaults.WARN_LEVEL_TEXT,
+		ErrorLevelText:    defaults.ERROR_LEVEL_TEXT,
+		FatalLevelText:    defaults.FATAL_LEVEL_TEXT,
+	}
 	writers   *idmap.IdMap = nil
 	writerErr error        = nil
 )
@@ -42,27 +65,51 @@ func DisableWriter(id int) {
 	writers.Disable(id)
 }
 
+func ApplyConfig(cfg *multilog.Config) {
+	if cfg.InfoOutputStream == nil {
+		cfg.InfoOutputStream = os.Stderr
+	}
+
+	if cfg.DebugOutputStream == nil {
+		cfg.DebugOutputStream = os.Stderr
+	}
+
+	if cfg.WarnOutputStream == nil {
+		cfg.WarnOutputStream = os.Stderr
+	}
+
+	if cfg.ErrorOutputStream == nil {
+		cfg.ErrorOutputStream = os.Stderr
+	}
+
+	if cfg.FatalOutputStream == nil {
+		cfg.FatalOutputStream = os.Stderr
+	}
+
+	config = cfg
+}
+
 func Info(msg string) {
 	datetime := time.Now()
 
 	writeToStream(
 		&datetime,
-		&multilog.InfoLevelText,
+		&config.InfoLevelText,
 		&msg,
-		multilog.InfoOutputStream,
+		config.InfoOutputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&multilog.InfoLevelText,
+			&config.InfoLevelText,
 			&msg,
 		)
 	}
 }
 
 func Debug(msg string) {
-	if !multilog.IsEnableDebugLogs {
+	if !config.IsEnableDebugLogs {
 		return
 	}
 
@@ -70,22 +117,22 @@ func Debug(msg string) {
 
 	writeToStream(
 		&datetime,
-		&multilog.DebugLevelText,
+		&config.DebugLevelText,
 		&msg,
-		multilog.DebugOutputStream,
+		config.DebugOutputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&multilog.DebugLevelText,
+			&config.DebugLevelText,
 			&msg,
 		)
 	}
 }
 
 func Warn(msg string) {
-	if !multilog.IsEnableWarnLogs {
+	if !config.IsEnableWarnLogs {
 		return
 	}
 
@@ -93,15 +140,15 @@ func Warn(msg string) {
 
 	writeToStream(
 		&datetime,
-		&multilog.WarnLevelText,
+		&config.WarnLevelText,
 		&msg,
-		multilog.WarnOutputStream,
+		config.WarnOutputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&multilog.WarnLevelText,
+			&config.WarnLevelText,
 			&msg,
 		)
 	}
@@ -114,15 +161,15 @@ func Error(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&multilog.ErrorLevelText,
+		&config.ErrorLevelText,
 		&desc,
-		multilog.ErrorOutputStream,
+		config.ErrorOutputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&multilog.ErrorLevelText,
+			&config.ErrorLevelText,
 			&desc,
 		)
 	}
@@ -135,20 +182,20 @@ func Fatal(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&multilog.FatalLevelText,
+		&config.FatalLevelText,
 		&desc,
-		multilog.FatalOutputStream,
+		config.FatalOutputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&multilog.FatalLevelText,
+			&config.FatalLevelText,
 			&desc,
 		)
 	}
 
-	os.Exit(multilog.FatalExitStatusCode)
+	os.Exit(config.FatalExitStatusCode)
 }
 
 func writeToStream(
@@ -159,12 +206,12 @@ func writeToStream(
 ) {
 	stream.Write(
 		[]byte(
-			(*datetime).Format(multilog.TimeFormat) +
-				multilog.ItemSeparatorText +
+			(*datetime).Format(config.TimeFormat) +
+				config.ItemSeparatorText +
 				*level +
-				multilog.ItemSeparatorText +
+				config.ItemSeparatorText +
 				*message +
-				multilog.LineEndingText,
+				config.LineEndingText,
 		),
 	)
 }
