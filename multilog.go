@@ -9,7 +9,7 @@ import (
 )
 
 type LogWriter interface {
-	WriteLog(datetime *string, messageType *string, message *string) error
+	WriteLog(datetime *time.Time, messageType *string, message *string) error
 }
 
 const (
@@ -59,7 +59,7 @@ func DisableLogWriter(id int) {
 }
 
 func Info(msg string) {
-	datetime := time.Now().Format(TimeFormat)
+	datetime := time.Now()
 
 	writeToStream(
 		&datetime,
@@ -82,7 +82,7 @@ func Debug(msg string) {
 		return
 	}
 
-	datetime := time.Now().Format(TimeFormat)
+	datetime := time.Now()
 
 	writeToStream(
 		&datetime,
@@ -105,7 +105,7 @@ func Warn(msg string) {
 		return
 	}
 
-	datetime := time.Now().Format(TimeFormat)
+	datetime := time.Now()
 
 	writeToStream(
 		&datetime,
@@ -124,7 +124,7 @@ func Warn(msg string) {
 }
 
 func Error(desc string, err error) {
-	datetime := time.Now().Format(TimeFormat)
+	datetime := time.Now()
 
 	desc = desc + errorWord + err.Error()
 
@@ -145,7 +145,7 @@ func Error(desc string, err error) {
 }
 
 func Fatal(desc string, err error) {
-	datetime := time.Now().Format(TimeFormat)
+	datetime := time.Now()
 
 	desc = desc + errorWord + err.Error()
 
@@ -168,14 +168,14 @@ func Fatal(desc string, err error) {
 }
 
 func writeToStream(
-	datetime *string,
+	datetime *time.Time,
 	messageType *string,
 	message *string,
 	stream *os.File,
 ) {
 	stream.Write(
 		[]byte(
-			*datetime +
+			(*datetime).Format(TimeFormat) +
 				ItemSeparator +
 				*messageType +
 				ItemSeparator +
@@ -186,7 +186,7 @@ func writeToStream(
 }
 
 func writeToLogWriters(
-	datetime *string,
+	datetime *time.Time,
 	messageType *string,
 	message *string,
 ) {
