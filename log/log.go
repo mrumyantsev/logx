@@ -160,11 +160,11 @@ func writeToStream(
 	stream.Write(
 		[]byte(
 			(*datetime).Format(multilog.TimeFormat) +
-				multilog.ItemSeparator +
+				multilog.ItemSeparatorText +
 				*level +
-				multilog.ItemSeparator +
+				multilog.ItemSeparatorText +
 				*message +
-				multilog.LineEnding,
+				multilog.LineEndingText,
 		),
 	)
 }
