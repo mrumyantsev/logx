@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	_ERROR_WORD string = ". error: "
+	_ERROR_WORD   string = ". error: "
+	_EMPTY_STRING string = ""
 )
 
 var (
@@ -82,6 +83,38 @@ func ApplyConfig(cfg *multilog.Config) {
 
 	if cfg.FatalOutputStream == nil {
 		cfg.FatalOutputStream = os.Stderr
+	}
+
+	if cfg.TimeFormat == _EMPTY_STRING {
+		cfg.TimeFormat = defaults.TIME_FORMAT
+	}
+
+	if cfg.ItemSeparatorText == _EMPTY_STRING {
+		cfg.ItemSeparatorText = defaults.ITEM_SEPARATOR_TEXT
+	}
+
+	if cfg.LineEndingText == _EMPTY_STRING {
+		cfg.LineEndingText = defaults.LINE_ENDING_TEXT
+	}
+
+	if cfg.InfoLevelText == _EMPTY_STRING {
+		cfg.InfoLevelText = defaults.INFO_LEVEL_TEXT
+	}
+
+	if cfg.DebugLevelText == _EMPTY_STRING {
+		cfg.DebugLevelText = defaults.DEBUG_LEVEL_TEXT
+	}
+
+	if cfg.WarnLevelText == _EMPTY_STRING {
+		cfg.WarnLevelText = defaults.WARN_LEVEL_TEXT
+	}
+
+	if cfg.ErrorLevelText == _EMPTY_STRING {
+		cfg.ErrorLevelText = defaults.ERROR_LEVEL_TEXT
+	}
+
+	if cfg.FatalLevelText == _EMPTY_STRING {
+		cfg.FatalLevelText = defaults.FATAL_LEVEL_TEXT
 	}
 
 	config = cfg
