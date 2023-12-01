@@ -30,11 +30,11 @@ var (
 	IsEnableWarnLogs    bool     = true
 	ItemSeparator       string   = " "
 	LineEnding          string   = "\n"
-	InfoLevel           string   = "INF"
-	DebugLevel          string   = "DBG"
-	WarnLevel           string   = "WRN"
-	ErrorLevel          string   = "ERR"
-	FatalLevel          string   = "FTL"
+	InfoLevelText       string   = "INF"
+	DebugLevelText      string   = "DBG"
+	WarnLevelText       string   = "WRN"
+	ErrorLevelText      string   = "ERR"
+	FatalLevelText      string   = "FTL"
 	TimeFormat          string   = "2006-01-02T15:04:05-07:00"
 )
 
@@ -63,7 +63,7 @@ func Info(msg string) {
 
 	writeToStream(
 		&datetime,
-		&InfoLevel,
+		&InfoLevelText,
 		&msg,
 		InfoOutputStream,
 	)
@@ -71,7 +71,7 @@ func Info(msg string) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&InfoLevel,
+			&InfoLevelText,
 			&msg,
 		)
 	}
@@ -86,7 +86,7 @@ func Debug(msg string) {
 
 	writeToStream(
 		&datetime,
-		&DebugLevel,
+		&DebugLevelText,
 		&msg,
 		DebugOutputStream,
 	)
@@ -94,7 +94,7 @@ func Debug(msg string) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&DebugLevel,
+			&DebugLevelText,
 			&msg,
 		)
 	}
@@ -109,7 +109,7 @@ func Warn(msg string) {
 
 	writeToStream(
 		&datetime,
-		&WarnLevel,
+		&WarnLevelText,
 		&msg,
 		WarnOutputStream,
 	)
@@ -117,7 +117,7 @@ func Warn(msg string) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&WarnLevel,
+			&WarnLevelText,
 			&msg,
 		)
 	}
@@ -130,7 +130,7 @@ func Error(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&ErrorLevel,
+		&ErrorLevelText,
 		&desc,
 		ErrorOutputStream,
 	)
@@ -138,7 +138,7 @@ func Error(desc string, err error) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&ErrorLevel,
+			&ErrorLevelText,
 			&desc,
 		)
 	}
@@ -151,7 +151,7 @@ func Fatal(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&FatalLevel,
+		&FatalLevelText,
 		&desc,
 		FatalOutputStream,
 	)
@@ -159,7 +159,7 @@ func Fatal(desc string, err error) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&FatalLevel,
+			&FatalLevelText,
 			&desc,
 		)
 	}
