@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	errorWord string = ". error: "
+	_ERROR_WORD string = ". error: "
 )
 
 var (
@@ -110,7 +110,7 @@ func Warn(msg string) {
 func Error(desc string, err error) {
 	datetime := time.Now()
 
-	desc = desc + errorWord + err.Error()
+	desc = desc + _ERROR_WORD + err.Error()
 
 	writeToStream(
 		&datetime,
@@ -131,7 +131,7 @@ func Error(desc string, err error) {
 func Fatal(desc string, err error) {
 	datetime := time.Now()
 
-	desc = desc + errorWord + err.Error()
+	desc = desc + _ERROR_WORD + err.Error()
 
 	writeToStream(
 		&datetime,
