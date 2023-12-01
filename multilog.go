@@ -9,7 +9,7 @@ import (
 )
 
 type LogWriter interface {
-	WriteLog(datetime *time.Time, messageType *string, message *string) error
+	WriteLog(datetime *time.Time, level *string, message *string) error
 }
 
 const (
@@ -30,11 +30,11 @@ var (
 	IsEnableWarnLogs    bool     = true
 	ItemSeparator       string   = " "
 	LineEnding          string   = "\n"
-	InfoMessageType     string   = "INF"
-	DebugMessageType    string   = "DBG"
-	WarnMessageType     string   = "WRN"
-	ErrorMessageType    string   = "ERR"
-	FatalMessageType    string   = "FTL"
+	InfoLevel           string   = "INF"
+	DebugLevel          string   = "DBG"
+	WarnLevel           string   = "WRN"
+	ErrorLevel          string   = "ERR"
+	FatalLevel          string   = "FTL"
 	TimeFormat          string   = "2006-01-02T15:04:05-07:00"
 )
 
@@ -63,7 +63,7 @@ func Info(msg string) {
 
 	writeToStream(
 		&datetime,
-		&InfoMessageType,
+		&InfoLevel,
 		&msg,
 		InfoOutputStream,
 	)
@@ -71,7 +71,7 @@ func Info(msg string) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&InfoMessageType,
+			&InfoLevel,
 			&msg,
 		)
 	}
@@ -86,7 +86,7 @@ func Debug(msg string) {
 
 	writeToStream(
 		&datetime,
-		&DebugMessageType,
+		&DebugLevel,
 		&msg,
 		DebugOutputStream,
 	)
@@ -94,7 +94,7 @@ func Debug(msg string) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&DebugMessageType,
+			&DebugLevel,
 			&msg,
 		)
 	}
@@ -109,7 +109,7 @@ func Warn(msg string) {
 
 	writeToStream(
 		&datetime,
-		&WarnMessageType,
+		&WarnLevel,
 		&msg,
 		WarnOutputStream,
 	)
@@ -117,7 +117,7 @@ func Warn(msg string) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&WarnMessageType,
+			&WarnLevel,
 			&msg,
 		)
 	}
@@ -130,7 +130,7 @@ func Error(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&ErrorMessageType,
+		&ErrorLevel,
 		&desc,
 		ErrorOutputStream,
 	)
@@ -138,7 +138,7 @@ func Error(desc string, err error) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&ErrorMessageType,
+			&ErrorLevel,
 			&desc,
 		)
 	}
@@ -151,7 +151,7 @@ func Fatal(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&FatalMessageType,
+		&FatalLevel,
 		&desc,
 		FatalOutputStream,
 	)
@@ -159,7 +159,7 @@ func Fatal(desc string, err error) {
 	if logWriters != nil {
 		writeToLogWriters(
 			&datetime,
-			&FatalMessageType,
+			&FatalLevel,
 			&desc,
 		)
 	}
@@ -169,7 +169,7 @@ func Fatal(desc string, err error) {
 
 func writeToStream(
 	datetime *time.Time,
-	messageType *string,
+	level *string,
 	message *string,
 	stream *os.File,
 ) {
@@ -177,7 +177,7 @@ func writeToStream(
 		[]byte(
 			(*datetime).Format(TimeFormat) +
 				ItemSeparator +
-				*messageType +
+				*level +
 				ItemSeparator +
 				*message +
 				LineEnding,
@@ -187,7 +187,7 @@ func writeToStream(
 
 func writeToLogWriters(
 	datetime *time.Time,
-	messageType *string,
+	level *string,
 	message *string,
 ) {
 	var (
@@ -205,7 +205,7 @@ func writeToLogWriters(
 
 		logWriterErr = writer.(LogWriter).WriteLog(
 			datetime,
-			messageType,
+			level,
 			message,
 		)
 
