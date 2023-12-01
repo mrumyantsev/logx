@@ -20,8 +20,8 @@ const (
 
 func main() {
 	loggerCfg := &multilog.Config{
-		IsEnableDebugLogs:   false,
-		IsEnableWarnLogs:    false,
+		IsDisableDebugLogs:  true,
+		IsDisableWarnLogs:   true,
 		FatalExitStatusCode: 123,
 	}
 

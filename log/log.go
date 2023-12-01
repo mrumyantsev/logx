@@ -22,8 +22,8 @@ var (
 		ErrorOutputStream: os.Stderr,
 		FatalOutputStream: os.Stderr,
 
-		IsEnableDebugLogs: true,
-		IsEnableWarnLogs:  true,
+		IsDisableDebugLogs: false,
+		IsDisableWarnLogs:  false,
 
 		FatalExitStatusCode: 1,
 
@@ -109,7 +109,7 @@ func Info(msg string) {
 }
 
 func Debug(msg string) {
-	if !config.IsEnableDebugLogs {
+	if config.IsDisableDebugLogs {
 		return
 	}
 
@@ -132,7 +132,7 @@ func Debug(msg string) {
 }
 
 func Warn(msg string) {
-	if !config.IsEnableWarnLogs {
+	if config.IsDisableWarnLogs {
 		return
 	}
 

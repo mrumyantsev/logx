@@ -12,8 +12,8 @@ type Config struct {
 	ErrorOutputStream *os.File
 	FatalOutputStream *os.File
 
-	IsEnableDebugLogs bool
-	IsEnableWarnLogs  bool
+	IsDisableDebugLogs bool
+	IsDisableWarnLogs  bool
 
 	FatalExitStatusCode int
 
