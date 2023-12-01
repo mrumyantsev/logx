@@ -9,7 +9,7 @@ import (
 )
 
 type LogWriter interface {
-	WriteLog(datetime *time.Time, level *string, message *string) error
+	WriteLog(datetime time.Time, level string, message string) error
 }
 
 const (
@@ -204,9 +204,9 @@ func writeToLogWriters(
 		}
 
 		logWriterErr = writer.(LogWriter).WriteLog(
-			datetime,
-			level,
-			message,
+			*datetime,
+			*level,
+			*message,
 		)
 
 		if logWriterErr != nil {

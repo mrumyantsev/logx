@@ -47,9 +47,9 @@ type FileController struct {
 	Destination string
 }
 
-func (f *FileController) WriteLog(datetime *time.Time, messageType *string, message *string) error {
+func (f *FileController) WriteLog(datetime time.Time, level string, message string) error {
 	fmt.Println(fmt.Sprintf(
-		_WRITTEN_FILE_EXAMPLE, f.Destination, *datetime, *messageType, *message))
+		_WRITTEN_FILE_EXAMPLE, f.Destination, datetime, level, message))
 
 	return nil
 }
@@ -58,9 +58,9 @@ type DatabaseController struct {
 	Destination string
 }
 
-func (d *DatabaseController) WriteLog(datetime *time.Time, messageType *string, message *string) error {
+func (d *DatabaseController) WriteLog(datetime time.Time, level string, message string) error {
 	fmt.Println(fmt.Sprintf(
-		_WRITTEN_DATABASE_EXAMPLE, d.Destination, *datetime, *messageType, *message))
+		_WRITTEN_DATABASE_EXAMPLE, d.Destination, datetime, level, message))
 
 	return nil
 }
