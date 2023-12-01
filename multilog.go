@@ -15,8 +15,6 @@ type Config struct {
 	IsDisableDebugLogs bool
 	IsDisableWarnLogs  bool
 
-	FatalExitStatusCode int
-
 	TimeFormat string
 
 	ItemSeparatorText string

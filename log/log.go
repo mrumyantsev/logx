@@ -25,8 +25,6 @@ var (
 		IsDisableDebugLogs: false,
 		IsDisableWarnLogs:  false,
 
-		FatalExitStatusCode: 1,
-
 		TimeFormat: defaults.TIME_FORMAT,
 
 		ItemSeparatorText: defaults.ITEM_SEPARATOR_TEXT,
@@ -195,7 +193,30 @@ func Fatal(desc string, err error) {
 		)
 	}
 
-	os.Exit(config.FatalExitStatusCode)
+	os.Exit(1)
+}
+
+func FatalWithCode(desc string, err error, exitCode int) {
+	datetime := time.Now()
+
+	desc = desc + _ERROR_WORD + err.Error()
+
+	writeToStream(
+		&datetime,
+		&config.FatalLevelText,
+		&desc,
+		config.FatalOutputStream,
+	)
+
+	if writers != nil {
+		writeToWriters(
+			&datetime,
+			&config.FatalLevelText,
+			&desc,
+		)
+	}
+
+	os.Exit(exitCode)
 }
 
 func writeToStream(
