@@ -10,4 +10,6 @@ const (
 	WARN_LEVEL_TEXT     string = "WRN"
 	ERROR_LEVEL_TEXT    string = "ERR"
 	FATAL_LEVEL_TEXT    string = "FTL"
+
+	EMPTY_STRING string = ""
 )
