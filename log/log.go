@@ -7,7 +7,6 @@ import (
 
 	"github.com/mrumyantsev/go-idmap"
 	"github.com/mrumyantsev/multilog"
-	"github.com/mrumyantsev/multilog/defaults"
 )
 
 const (
@@ -15,29 +14,15 @@ const (
 )
 
 var (
-	config *multilog.Config = &multilog.Config{
-		InfoOutputStream:  os.Stderr,
-		DebugOutputStream: os.Stderr,
-		WarnOutputStream:  os.Stderr,
-		ErrorOutputStream: os.Stderr,
-		FatalOutputStream: os.Stderr,
-
-		IsDisableDebugLogs: false,
-		IsDisableWarnLogs:  false,
-
-		TimeFormat: defaults.TIME_FORMAT,
-
-		ItemSeparatorText: defaults.ITEM_SEPARATOR_TEXT,
-		LineEndingText:    defaults.LINE_ENDING_TEXT,
-		InfoLevelText:     defaults.INFO_LEVEL_TEXT,
-		DebugLevelText:    defaults.DEBUG_LEVEL_TEXT,
-		WarnLevelText:     defaults.WARN_LEVEL_TEXT,
-		ErrorLevelText:    defaults.ERROR_LEVEL_TEXT,
-		FatalLevelText:    defaults.FATAL_LEVEL_TEXT,
-	}
-	writers   *idmap.IdMap = nil
-	writerErr error        = nil
+	config    *multilog.Config = multilog.NewConfig()
+	writers   *idmap.IdMap     = nil
+	writerErr error            = nil
 )
+
+func ApplyConfig(cfg *multilog.Config) {
+	cfg.InitEmptyFields()
+	config = cfg
+}
 
 type Writer interface {
 	WriteLog(datetime time.Time, level string, message string) error
@@ -61,12 +46,6 @@ func EnableWriter(id int) {
 
 func DisableWriter(id int) {
 	writers.Disable(id)
-}
-
-func ApplyConfig(cfg *multilog.Config) {
-	cfg.InitEmptyFields()
-
-	config = cfg
 }
 
 func Info(msg string) {
