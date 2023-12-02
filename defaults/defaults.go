@@ -13,3 +13,27 @@ const (
 
 	EMPTY_STRING string = ""
 )
+
+type Colors struct {
+	DatetimeColor   string
+	InfoLevelColor  string
+	DebugLevelColor string
+	WarnLevelColor  string
+	ErrorLevelColor string
+	FatalLevelColor string
+	MessageColor    string
+}
+
+func GetColors() *Colors {
+	colors := &Colors{}
+
+	colors.DatetimeColor = string([]byte{27, 91, 57, 48, 109})
+	colors.InfoLevelColor = string([]byte{27, 91, 51, 50, 109})
+	colors.DebugLevelColor = string([]byte{27, 91, 51, 51, 109})
+	colors.WarnLevelColor = string([]byte{27, 91, 51, 49, 109})
+	colors.ErrorLevelColor = string([]byte{27, 91, 49, 109, 27, 91, 51, 49, 109})
+	colors.FatalLevelColor = colors.ErrorLevelColor
+	colors.MessageColor = string([]byte{27, 91, 48, 109})
+
+	return colors
+}

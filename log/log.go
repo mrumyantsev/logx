@@ -56,6 +56,7 @@ func Info(msg string) {
 		&config.InfoLevelText,
 		&msg,
 		config.InfoOutputStream,
+		&config.InfoLevelColor,
 	)
 
 	if writers != nil {
@@ -79,6 +80,7 @@ func Debug(msg string) {
 		&config.DebugLevelText,
 		&msg,
 		config.DebugOutputStream,
+		&config.DebugLevelColor,
 	)
 
 	if writers != nil {
@@ -102,6 +104,7 @@ func Warn(msg string) {
 		&config.WarnLevelText,
 		&msg,
 		config.WarnOutputStream,
+		&config.WarnLevelColor,
 	)
 
 	if writers != nil {
@@ -123,6 +126,7 @@ func Error(desc string, err error) {
 		&config.ErrorLevelText,
 		&desc,
 		config.ErrorOutputStream,
+		&config.ErrorLevelColor,
 	)
 
 	if writers != nil {
@@ -144,6 +148,7 @@ func Fatal(desc string, err error) {
 		&config.FatalLevelText,
 		&desc,
 		config.FatalOutputStream,
+		&config.FatalLevelColor,
 	)
 
 	if writers != nil {
@@ -167,6 +172,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 		&config.FatalLevelText,
 		&desc,
 		config.FatalOutputStream,
+		&config.FatalLevelColor,
 	)
 
 	if writers != nil {
@@ -185,13 +191,17 @@ func writeToStream(
 	level *string,
 	message *string,
 	stream *os.File,
+	levelColor *string,
 ) {
 	stream.Write(
 		[]byte(
-			(*datetime).Format(config.TimeFormat) +
+			config.DatetimeColor +
+				(*datetime).Format(config.TimeFormat) +
 				config.ItemSeparatorText +
+				*levelColor +
 				*level +
 				config.ItemSeparatorText +
+				config.MessageColor +
 				*message +
 				config.LineEndingText,
 		),
