@@ -64,57 +64,7 @@ func DisableWriter(id int) {
 }
 
 func ApplyConfig(cfg *multilog.Config) {
-	if cfg.InfoOutputStream == nil {
-		cfg.InfoOutputStream = os.Stderr
-	}
-
-	if cfg.DebugOutputStream == nil {
-		cfg.DebugOutputStream = os.Stderr
-	}
-
-	if cfg.WarnOutputStream == nil {
-		cfg.WarnOutputStream = os.Stderr
-	}
-
-	if cfg.ErrorOutputStream == nil {
-		cfg.ErrorOutputStream = os.Stderr
-	}
-
-	if cfg.FatalOutputStream == nil {
-		cfg.FatalOutputStream = os.Stderr
-	}
-
-	if cfg.TimeFormat == defaults.EMPTY_STRING {
-		cfg.TimeFormat = defaults.TIME_FORMAT
-	}
-
-	if cfg.ItemSeparatorText == defaults.EMPTY_STRING {
-		cfg.ItemSeparatorText = defaults.ITEM_SEPARATOR_TEXT
-	}
-
-	if cfg.LineEndingText == defaults.EMPTY_STRING {
-		cfg.LineEndingText = defaults.LINE_ENDING_TEXT
-	}
-
-	if cfg.InfoLevelText == defaults.EMPTY_STRING {
-		cfg.InfoLevelText = defaults.INFO_LEVEL_TEXT
-	}
-
-	if cfg.DebugLevelText == defaults.EMPTY_STRING {
-		cfg.DebugLevelText = defaults.DEBUG_LEVEL_TEXT
-	}
-
-	if cfg.WarnLevelText == defaults.EMPTY_STRING {
-		cfg.WarnLevelText = defaults.WARN_LEVEL_TEXT
-	}
-
-	if cfg.ErrorLevelText == defaults.EMPTY_STRING {
-		cfg.ErrorLevelText = defaults.ERROR_LEVEL_TEXT
-	}
-
-	if cfg.FatalLevelText == defaults.EMPTY_STRING {
-		cfg.FatalLevelText = defaults.FATAL_LEVEL_TEXT
-	}
+	cfg.InitEmptyFields()
 
 	config = cfg
 }
