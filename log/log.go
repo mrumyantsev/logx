@@ -258,19 +258,24 @@ func writeToWriters(
 	)
 
 	for ; id < length; id++ {
+		// gets log writer by its ID
 		writer, isEnabled = writers.GetValue(id)
 
+		// checks, if it is enabled
 		if !isEnabled {
 			continue
 		}
 
+		// writes current log to enabled log writer
 		writerErr = writer.(Writer).WriteLog(
 			*datetime,
 			*level,
 			*message,
 		)
 		if writerErr != nil {
-			var msg string = fmt.Sprintf(
+			// writes error level log to error output
+			// stream, when the error occurs
+			var desc string = fmt.Sprintf(
 				"could not write to log writer with id=%d", id) +
 				_ERROR_INSERT + writerErr.Error()
 
@@ -278,7 +283,7 @@ func writeToWriters(
 				datetime,
 				&config.ErrorLevelText,
 				&config.ErrorLevelColor,
-				&msg,
+				&desc,
 				config.ErrorOutputStream,
 			)
 		}
