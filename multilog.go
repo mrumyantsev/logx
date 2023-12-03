@@ -51,20 +51,22 @@ func NewConfig() *Config {
 
 // Initialize fields, that were not set by user, with its default values.
 func (c *Config) InitEmptyFields() {
+	streams := defaults.GetOutputStreams()
+
 	if c.InfoOutputStream == nil {
-		c.InfoOutputStream = os.Stderr
+		c.InfoOutputStream = streams.InfoOutputStream
 	}
 	if c.DebugOutputStream == nil {
-		c.DebugOutputStream = os.Stderr
+		c.DebugOutputStream = streams.DebugOutputStream
 	}
 	if c.WarnOutputStream == nil {
-		c.WarnOutputStream = os.Stderr
+		c.WarnOutputStream = streams.WarnOutputStream
 	}
 	if c.ErrorOutputStream == nil {
-		c.ErrorOutputStream = os.Stderr
+		c.ErrorOutputStream = streams.ErrorOutputStream
 	}
 	if c.FatalOutputStream == nil {
-		c.FatalOutputStream = os.Stderr
+		c.FatalOutputStream = streams.FatalOutputStream
 	}
 	if c.TimeFormat == defaults.EMPTY_STRING {
 		c.TimeFormat = defaults.TIME_FORMAT

@@ -1,5 +1,9 @@
 package defaults
 
+import (
+	"os"
+)
+
 // Constants, that defines the presentation of logs.
 const (
 	TIME_FORMAT string = "2006-01-02T15:04:05-07:00"
@@ -16,6 +20,28 @@ const (
 	// comparisons
 	EMPTY_STRING string = ""
 )
+
+// Stores output stream settings.
+type OutputStreams struct {
+	InfoOutputStream  *os.File
+	DebugOutputStream *os.File
+	WarnOutputStream  *os.File
+	ErrorOutputStream *os.File
+	FatalOutputStream *os.File
+}
+
+// Get output stream settings, filled with default values.
+func GetOutputStreams() *OutputStreams {
+	streams := &OutputStreams{}
+
+	streams.InfoOutputStream = os.Stderr
+	streams.DebugOutputStream = os.Stderr
+	streams.WarnOutputStream = os.Stderr
+	streams.ErrorOutputStream = os.Stderr
+	streams.FatalOutputStream = os.Stderr
+
+	return streams
+}
 
 // Stores text colors for output streams.
 type Colors struct {
