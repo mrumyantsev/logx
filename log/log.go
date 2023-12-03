@@ -270,9 +270,16 @@ func writeToWriters(
 			*message,
 		)
 		if writerErr != nil {
-			Error(
-				fmt.Sprintf("could not write to log writer with id=%d", id),
-				writerErr,
+			var msg string = fmt.Sprintf(
+				"could not write to log writer with id=%d", id) +
+				_ERROR_INSERT + writerErr.Error()
+
+			writeToStream(
+				datetime,
+				&config.ErrorLevelText,
+				&config.ErrorLevelColor,
+				&msg,
+				config.ErrorOutputStream,
 			)
 		}
 	}
