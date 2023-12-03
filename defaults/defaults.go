@@ -1,5 +1,6 @@
 package defaults
 
+// Constants, that defines the presentation of logs.
 const (
 	TIME_FORMAT string = "2006-01-02T15:04:05-07:00"
 
@@ -11,9 +12,12 @@ const (
 	ERROR_LEVEL_TEXT    string = "ERR"
 	FATAL_LEVEL_TEXT    string = "FTL"
 
+	// only participates in
+	// comparisons
 	EMPTY_STRING string = ""
 )
 
+// Stores text colors for output streams.
 type Colors struct {
 	DatetimeColor   string
 	InfoLevelColor  string
@@ -24,6 +28,7 @@ type Colors struct {
 	MessageColor    string
 }
 
+// Get text colors, filled with default values.
 func GetColors() *Colors {
 	colors := &Colors{}
 

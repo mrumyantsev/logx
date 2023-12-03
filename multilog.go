@@ -14,6 +14,8 @@ type Config struct {
 	ErrorOutputStream *os.File
 	FatalOutputStream *os.File
 
+	// affects only output stream logs
+	// (showing in console/terminal)
 	IsDisableColors bool
 
 	IsDisableDebugLogs bool

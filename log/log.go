@@ -9,25 +9,40 @@ import (
 	"github.com/mrumyantsev/multilog"
 )
 
+// Logger working constants.
 const (
+	// inserts between the error and
+	// its description. Used in error
+	// and fatal level logging functions
 	_ERROR_INSERT string = ". error: "
 )
 
+// Logger working variables.
 var (
-	config    *multilog.Config = multilog.NewConfig()
-	writers   *idmap.IdMap     = nil
-	writerErr error            = nil
+	// defines initial configuration,
+	// when the application starts
+	config *multilog.Config = multilog.NewConfig()
+	// contains the log writer objects,
+	// that should be implemented by user
+	writers *idmap.IdMap = nil
+	// to store the error, occurred by
+	// user's log writer
+	writerErr error = nil
 )
 
+// Apply the configuration, that was created by user, to logger.
 func ApplyConfig(cfg *multilog.Config) {
 	cfg.InitEmptyFields()
 	config = cfg
 }
 
+// A log writer's interface, that need to implement by user's object,
+// that able to write logs.
 type Writer interface {
 	WriteLog(datetime time.Time, level string, message string) error
 }
 
+// Add implemented log writer object with its ID.
 func AddWriter(id int, writer Writer) {
 	if writers == nil {
 		writers = idmap.New()
@@ -36,18 +51,23 @@ func AddWriter(id int, writer Writer) {
 	writers.SetValue(id, writer)
 }
 
+// Remove implemented log writer object by its ID.
 func RemoveWriter(id int) {
 	writers.DeleteValue(id)
 }
 
+// Enable implemented log writer object by its ID.
 func EnableWriter(id int) {
 	writers.Enable(id)
 }
 
+// Disable implemented log writer object by its ID.
 func DisableWriter(id int) {
 	writers.Disable(id)
 }
 
+// Write info level log to its own output stream. Then write it to the
+// log writers (that exists and set to enabled).
 func Info(msg string) {
 	datetime := time.Now()
 
@@ -68,6 +88,8 @@ func Info(msg string) {
 	}
 }
 
+// Write debug level log to its own output stream. Then write it to the
+// log writers (that exists and set to enabled).
 func Debug(msg string) {
 	if config.IsDisableDebugLogs {
 		return
@@ -92,6 +114,8 @@ func Debug(msg string) {
 	}
 }
 
+// Write warn level log to its own output stream. Then write it to the
+// log writers (that exists and set to enabled).
 func Warn(msg string) {
 	if config.IsDisableWarnLogs {
 		return
@@ -116,6 +140,8 @@ func Warn(msg string) {
 	}
 }
 
+// Write error level log to its own output stream. Then write it to the
+// log writers (that exists and set to enabled).
 func Error(desc string, err error) {
 	datetime := time.Now()
 
@@ -138,6 +164,9 @@ func Error(desc string, err error) {
 	}
 }
 
+// Write fatal level log to its own output stream. Then write it to the
+// log writers (that exists and set to enabled). Exits the program at
+// the end with the exit code 1.
 func Fatal(desc string, err error) {
 	datetime := time.Now()
 
@@ -162,6 +191,9 @@ func Fatal(desc string, err error) {
 	os.Exit(1)
 }
 
+// Write fatal level log to its own output stream. Then write it to the
+// log writers (that exists and set to enabled). Exits the program at
+// the end with the exit code that set in argument.
 func FatalWithCode(desc string, err error, exitCode int) {
 	datetime := time.Now()
 
@@ -186,6 +218,8 @@ func FatalWithCode(desc string, err error, exitCode int) {
 	os.Exit(exitCode)
 }
 
+// Write to output stream function. The only function, that does not
+// handle the error (if it will occur).
 func writeToStream(
 	datetime *time.Time,
 	level *string,
@@ -208,6 +242,9 @@ func writeToStream(
 	)
 }
 
+// Write to log writers function. Does loop calling WriteLog() method
+// for every log writer object, that stored in the logger, and also
+// that has isEnabled=true flag.
 func writeToWriters(
 	datetime *time.Time,
 	level *string,
