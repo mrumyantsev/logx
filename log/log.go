@@ -69,7 +69,7 @@ func DisableWriter(id int) {
 // Write info level log to its own output stream. Then write it to the
 // log writers (that exists and set to enabled).
 func Info(msg string) {
-	datetime := time.Now()
+	var datetime time.Time = time.Now()
 
 	writeToStream(
 		&datetime,
@@ -95,7 +95,7 @@ func Debug(msg string) {
 		return
 	}
 
-	datetime := time.Now()
+	var datetime time.Time = time.Now()
 
 	writeToStream(
 		&datetime,
@@ -121,7 +121,7 @@ func Warn(msg string) {
 		return
 	}
 
-	datetime := time.Now()
+	var datetime time.Time = time.Now()
 
 	writeToStream(
 		&datetime,
@@ -143,7 +143,7 @@ func Warn(msg string) {
 // Write error level log to its own output stream. Then write it to the
 // log writers (that exists and set to enabled).
 func Error(desc string, err error) {
-	datetime := time.Now()
+	var datetime time.Time = time.Now()
 
 	desc = desc + _ERROR_INSERT + err.Error()
 
@@ -168,7 +168,7 @@ func Error(desc string, err error) {
 // log writers (that exists and set to enabled). Exits the program at
 // the end with the exit code 1.
 func Fatal(desc string, err error) {
-	datetime := time.Now()
+	var datetime time.Time = time.Now()
 
 	desc = desc + _ERROR_INSERT + err.Error()
 
@@ -195,7 +195,7 @@ func Fatal(desc string, err error) {
 // log writers (that exists and set to enabled). Exits the program at
 // the end with the exit code that set in argument.
 func FatalWithCode(desc string, err error, exitCode int) {
-	datetime := time.Now()
+	var datetime time.Time = time.Now()
 
 	desc = desc + _ERROR_INSERT + err.Error()
 
@@ -251,12 +251,13 @@ func writeToWriters(
 	message *string,
 ) {
 	var (
-		length    = writers.GetLength()
-		writer    interface{}
-		isEnabled bool
+		length    int         = writers.GetLength()
+		writer    interface{} = nil
+		id        int         = 0
+		isEnabled bool        = false
 	)
 
-	for id := 0; id < length; id++ {
+	for ; id < length; id++ {
 		writer, isEnabled = writers.GetValue(id)
 
 		if !isEnabled {
@@ -268,7 +269,6 @@ func writeToWriters(
 			*level,
 			*message,
 		)
-
 		if writerErr != nil {
 			Error(
 				fmt.Sprintf("could not write to log writer with id=%d", id),
