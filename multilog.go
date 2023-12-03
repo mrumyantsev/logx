@@ -38,7 +38,7 @@ type Config struct {
 	MessageColor    string
 }
 
-// Constructor for configuration.
+// Get initialized configuration instance.
 func NewConfig() *Config {
 	cfg := &Config{}
 
