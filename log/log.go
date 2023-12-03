@@ -74,9 +74,9 @@ func Info(msg string) {
 	writeToStream(
 		&datetime,
 		&config.InfoLevelText,
+		&config.InfoLevelColor,
 		&msg,
 		config.InfoOutputStream,
-		&config.InfoLevelColor,
 	)
 
 	if writers != nil {
@@ -100,9 +100,9 @@ func Debug(msg string) {
 	writeToStream(
 		&datetime,
 		&config.DebugLevelText,
+		&config.DebugLevelColor,
 		&msg,
 		config.DebugOutputStream,
-		&config.DebugLevelColor,
 	)
 
 	if writers != nil {
@@ -126,9 +126,9 @@ func Warn(msg string) {
 	writeToStream(
 		&datetime,
 		&config.WarnLevelText,
+		&config.WarnLevelColor,
 		&msg,
 		config.WarnOutputStream,
-		&config.WarnLevelColor,
 	)
 
 	if writers != nil {
@@ -150,9 +150,9 @@ func Error(desc string, err error) {
 	writeToStream(
 		&datetime,
 		&config.ErrorLevelText,
+		&config.ErrorLevelColor,
 		&desc,
 		config.ErrorOutputStream,
-		&config.ErrorLevelColor,
 	)
 
 	if writers != nil {
@@ -175,9 +175,9 @@ func Fatal(desc string, err error) {
 	writeToStream(
 		&datetime,
 		&config.FatalLevelText,
+		&config.FatalLevelColor,
 		&desc,
 		config.FatalOutputStream,
-		&config.FatalLevelColor,
 	)
 
 	if writers != nil {
@@ -202,9 +202,9 @@ func FatalWithCode(desc string, err error, exitCode int) {
 	writeToStream(
 		&datetime,
 		&config.FatalLevelText,
+		&config.FatalLevelColor,
 		&desc,
 		config.FatalOutputStream,
-		&config.FatalLevelColor,
 	)
 
 	if writers != nil {
@@ -223,9 +223,9 @@ func FatalWithCode(desc string, err error, exitCode int) {
 func writeToStream(
 	datetime *time.Time,
 	level *string,
+	levelColor *string,
 	message *string,
 	stream *os.File,
-	levelColor *string,
 ) {
 	stream.Write(
 		[]byte(
