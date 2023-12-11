@@ -11,53 +11,82 @@ import (
 )
 
 const (
-	_WRITTEN_FILE_EXAMPLE     string = "/ %s / %s / %s / %s /"
-	_WRITTEN_DATABASE_EXAMPLE string = "| %s | %s | %s | %s |"
+	// log writers IDs
+	_WRITER_FILE     int = 0
+	_WRITER_MYSQL    int = 7
+	_WRITER_POSTGRES int = 15
 
-	_LWID_MYSQL int = iota
-	_LWID_POSTGRESQL
-	_LWID_FILE
+	_WRITER_ACCEPTING_EXAMPLE string = "| %s | %s | %s | %s |"
 )
 
 func main() {
-	loggerCfg := &multilog.Config{
-		IsDisableDebugLogs: true,
-		IsDisableWarnLogs:  true,
+	logCfg := &multilog.Config{
+		IsDisableDebugLogs: false,
+		IsDisableWarnLogs:  false,
+		InfoLevelText:      "info",
+		DebugLevelText:     "debug",
+		WarnLevelText:      "warn",
+		ErrorLevelText:     "error",
+		FatalLevelText:     "fatal",
+		ItemSeparatorText:  "\t",
+		LineEndingText:     " (for console)\n",
 	}
 
-	log.ApplyConfig(loggerCfg)
+	log.ApplyConfig(logCfg)
 
-	file := &FileController{"./non-ordinary-logs.txt"}
-	mySql := &DatabaseController{"MySQL"}
+	file := &FileController{"logs.txt  ", nil}
+	mySql := &DatabaseController{"MySQL     "}
 	postgreSql := &DatabaseController{"PostgreSQL"}
 
-	log.AddWriter(_LWID_MYSQL, mySql)
-	log.AddWriter(_LWID_POSTGRESQL, postgreSql)
+	log.AddWriter(_WRITER_POSTGRES, postgreSql)
+	log.AddWriter(_WRITER_MYSQL, mySql)
 
-	log.Info("info message")
+	log.Info("message")
 
-	log.Debug("debug message")
+	log.AddWriter(_WRITER_FILE, file)
 
-	log.AddWriter(_LWID_FILE, file)
+	log.Debug("message")
 
-	log.Error("error description", errors.New("errors happens"))
+	log.DisableWriter(_WRITER_MYSQL)
+	log.DisableWriter(_WRITER_FILE)
 
-	log.RemoveWriter(_LWID_MYSQL)
+	log.Warn("message")
 
-	log.DisableWriter(_LWID_FILE)
+	log.DisableWriter(_WRITER_POSTGRES)
+	log.EnableWriter(_WRITER_FILE)
 
-	log.Fatal("fatal error description", errors.New("fatal errors happens"))
+	file.ProvokeError() // look at this
+
+	log.Error("description", errors.New("some error occurred"))
+
+	log.RemoveWriter(_WRITER_MYSQL)
+	log.EnableWriter(_WRITER_POSTGRES)
+	log.EnableWriter(_WRITER_MYSQL)
+	log.EnableWriter(_WRITER_FILE)
+
+	log.Fatal("description", errors.New("it crashed, as was planned"))
 }
 
 type FileController struct {
 	Destination string
+	err         error
 }
 
 func (f *FileController) WriteLog(datetime time.Time, level string, message string) error {
+	if f.err != nil {
+		return f.err
+	}
+
 	fmt.Println(fmt.Sprintf(
-		_WRITTEN_FILE_EXAMPLE, f.Destination, datetime.Format(defaults.TIME_FORMAT), level, message))
+		_WRITER_ACCEPTING_EXAMPLE, f.Destination, datetime.Format(defaults.TIME_FORMAT), level, message))
 
 	return nil
+}
+
+func (f *FileController) ProvokeError() {
+	f.err = errors.New("i can't write this log to file")
+
+	fmt.Println("*** An error is provoken to crash the file writer, ha-ha! ***")
 }
 
 type DatabaseController struct {
@@ -66,7 +95,7 @@ type DatabaseController struct {
 
 func (d *DatabaseController) WriteLog(datetime time.Time, level string, message string) error {
 	fmt.Println(fmt.Sprintf(
-		_WRITTEN_DATABASE_EXAMPLE, d.Destination, datetime.Format(defaults.TIME_FORMAT), level, message))
+		_WRITER_ACCEPTING_EXAMPLE, d.Destination, datetime.Format(defaults.TIME_FORMAT), level, message))
 
 	return nil
 }
