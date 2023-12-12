@@ -99,7 +99,7 @@ func Info(msg string) {
 		&config.InfoLevelText,
 		&config.InfoLevelColor,
 		&msg,
-		config.InfoOutputStream,
+		config.OutputStream,
 	)
 
 	if writers != nil {
@@ -125,7 +125,7 @@ func Debug(msg string) {
 		&config.DebugLevelText,
 		&config.DebugLevelColor,
 		&msg,
-		config.DebugOutputStream,
+		config.OutputStream,
 	)
 
 	if writers != nil {
@@ -151,7 +151,7 @@ func Warn(msg string) {
 		&config.WarnLevelText,
 		&config.WarnLevelColor,
 		&msg,
-		config.WarnOutputStream,
+		config.OutputStream,
 	)
 
 	if writers != nil {
@@ -175,7 +175,7 @@ func Error(desc string, err error) {
 		&config.ErrorLevelText,
 		&config.ErrorLevelColor,
 		&desc,
-		config.ErrorOutputStream,
+		config.OutputStream,
 	)
 
 	if writers != nil {
@@ -200,7 +200,7 @@ func Fatal(desc string, err error) {
 		&config.FatalLevelText,
 		&config.FatalLevelColor,
 		&desc,
-		config.FatalOutputStream,
+		config.OutputStream,
 	)
 
 	if writers != nil {
@@ -227,7 +227,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 		&config.FatalLevelText,
 		&config.FatalLevelColor,
 		&desc,
-		config.FatalOutputStream,
+		config.OutputStream,
 	)
 
 	if writers != nil {
@@ -303,7 +303,7 @@ func writeToWriters(
 				&config.ErrorLevelText,
 				&config.ErrorLevelColor,
 				&desc,
-				config.ErrorOutputStream,
+				config.OutputStream,
 			)
 		}
 	}

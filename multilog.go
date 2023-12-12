@@ -8,11 +8,7 @@ import (
 
 // Multilog configurational structure.
 type Config struct {
-	InfoOutputStream  *os.File
-	DebugOutputStream *os.File
-	WarnOutputStream  *os.File
-	ErrorOutputStream *os.File
-	FatalOutputStream *os.File
+	OutputStream *os.File
 
 	// affects only output stream logs
 	// (showing in console/terminal)
@@ -51,22 +47,8 @@ func NewConfig() *Config {
 
 // Initialize fields, that were not set by user, with its default values.
 func (c *Config) InitEmptyFields() {
-	streams := defaults.GetOutputStreams()
-
-	if c.InfoOutputStream == nil {
-		c.InfoOutputStream = streams.InfoOutputStream
-	}
-	if c.DebugOutputStream == nil {
-		c.DebugOutputStream = streams.DebugOutputStream
-	}
-	if c.WarnOutputStream == nil {
-		c.WarnOutputStream = streams.WarnOutputStream
-	}
-	if c.ErrorOutputStream == nil {
-		c.ErrorOutputStream = streams.ErrorOutputStream
-	}
-	if c.FatalOutputStream == nil {
-		c.FatalOutputStream = streams.FatalOutputStream
+	if c.OutputStream == nil {
+		c.OutputStream = defaults.GetOutputStream()
 	}
 	if c.TimeFormat == defaults.EMPTY_STRING {
 		c.TimeFormat = defaults.TIME_FORMAT

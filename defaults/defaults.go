@@ -21,26 +21,13 @@ const (
 	EMPTY_STRING string = ""
 )
 
-// Stores output stream settings.
-type OutputStreams struct {
-	InfoOutputStream  *os.File
-	DebugOutputStream *os.File
-	WarnOutputStream  *os.File
-	ErrorOutputStream *os.File
-	FatalOutputStream *os.File
-}
+var (
+	outputStream = os.Stderr
+)
 
 // Get output stream settings, filled with default values.
-func GetOutputStreams() *OutputStreams {
-	streams := &OutputStreams{}
-
-	streams.InfoOutputStream = os.Stderr
-	streams.DebugOutputStream = os.Stderr
-	streams.WarnOutputStream = os.Stderr
-	streams.ErrorOutputStream = os.Stderr
-	streams.FatalOutputStream = os.Stderr
-
-	return streams
+func GetOutputStream() *os.File {
+	return outputStream
 }
 
 // Stores text colors for output streams.
