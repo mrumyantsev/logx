@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/mrumyantsev/go-idmap"
 	"github.com/mrumyantsev/multilog"
 )
 
@@ -24,7 +23,10 @@ var (
 	config *multilog.Config = multilog.NewConfig()
 	// contains the log writer objects,
 	// that should be implemented by user
-	writers *idmap.IdMap = nil
+	writers []Writer = nil
+	// affects how writers slice
+	// will be accessed
+	writersCount int = 0
 	// to store the error, occurred by
 	// user's log writer
 	writerErr error = nil
@@ -43,17 +45,48 @@ type Writer interface {
 }
 
 // Add implemented log writer object with its ID.
-func AddWriter(id int, writer Writer) {
+func AddWriter(writer Writer) {
 	if writers == nil {
-		writers = idmap.New()
+		writers = []Writer{writer}
+		writersCount = 1
+		return
 	}
 
-	writers.SetValue(id, writer)
+	var i int = 0
+
+	for ; i < writersCount; i++ {
+		if writers[i] == writer {
+			return
+		}
+	}
+
+	i = 0
+
+	for ; i < writersCount; i++ {
+		if writers[i] == nil {
+			writers[i] = writer
+			return
+		}
+	}
+
+	writers = append(writers, writer)
+	writersCount++
 }
 
 // Remove implemented log writer object by its ID.
-func RemoveWriter(id int) {
-	writers.DeleteValue(id)
+func RemoveWriter(writer Writer) {
+	if writers == nil {
+		return
+	}
+
+	var i int = 0
+
+	for ; i < writersCount; i++ {
+		if writers[i] == writer {
+			writers[i] = nil
+			return
+		}
+	}
 }
 
 // Write info level log to its own output stream. Then write it to the
@@ -241,23 +274,19 @@ func writeToWriters(
 	message *string,
 ) {
 	var (
-		length    int         = writers.GetLength()
-		writer    interface{} = nil
-		id        int         = 0
-		isEnabled bool        = false
+		i      int    = 0
+		writer Writer = nil
 	)
 
-	for ; id < length; id++ {
-		// gets log writer by its ID
-		writer, isEnabled = writers.GetValue(id)
+	for ; i < writersCount; i++ {
+		writer = writers[i]
 
-		// checks, if it is enabled
-		if !isEnabled {
+		if writer == nil {
 			continue
 		}
 
 		// writes current log to enabled log writer
-		writerErr = writer.(Writer).WriteLog(
+		writerErr = writer.WriteLog(
 			*datetime,
 			*level,
 			*message,
@@ -266,7 +295,7 @@ func writeToWriters(
 			// writes error level log to error output
 			// stream, when the error occurs
 			var desc string = fmt.Sprintf(
-				"could not write to log writer with id=%d", id) +
+				"could not write to log writer=%T", writer) +
 				_ERROR_INSERT + writerErr.Error()
 
 			writeToStream(

@@ -11,11 +11,6 @@ import (
 )
 
 const (
-	// log writers IDs
-	_WRITER_FILE     int = 0
-	_WRITER_MYSQL    int = 7
-	_WRITER_POSTGRES int = 15
-
 	_WRITER_ACCEPTING_EXAMPLE string = "| %s | %s | %s | %s |"
 )
 
@@ -38,33 +33,33 @@ func main() {
 	mySql := &DatabaseController{"MySQL     "}
 	postgreSql := &DatabaseController{"PostgreSQL"}
 
-	log.AddWriter(_WRITER_POSTGRES, postgreSql)
-	log.AddWriter(_WRITER_MYSQL, mySql)
+	log.AddWriter(postgreSql)
+	log.AddWriter(mySql)
 
 	log.Info("message")
 
-	log.AddWriter(_WRITER_FILE, file)
+	log.AddWriter(file)
 
 	log.Debug("message")
 
-	log.RemoveWriter(_WRITER_MYSQL)
-	log.RemoveWriter(_WRITER_FILE)
+	log.RemoveWriter(mySql)
+	log.RemoveWriter(file)
 
 	log.Warn("message")
 
-	log.RemoveWriter(_WRITER_POSTGRES)
-	log.AddWriter(_WRITER_FILE, file)
+	file.ProvokeError() // attention! an error to show, how logger will handle it
 
-	file.ProvokeError() // look at this
+	log.RemoveWriter(postgreSql)
+	log.AddWriter(mySql)
+	log.AddWriter(file)
 
 	log.Error("description", errors.New("some error occurred"))
 
-	log.RemoveWriter(_WRITER_MYSQL)
-	log.AddWriter(_WRITER_POSTGRES, postgreSql)
-	log.AddWriter(_WRITER_MYSQL, mySql)
-	log.AddWriter(_WRITER_FILE, file)
+	log.RemoveWriter(mySql)
+	log.AddWriter(postgreSql)
+	log.AddWriter(file)
 
-	log.Fatal("description", errors.New("it crashed, as was planned"))
+	log.Fatal("description", errors.New("app crashed, as was planned"))
 }
 
 type FileController struct {
