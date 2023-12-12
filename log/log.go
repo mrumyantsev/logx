@@ -56,16 +56,6 @@ func RemoveWriter(id int) {
 	writers.DeleteValue(id)
 }
 
-// Enable implemented log writer object by its ID.
-func EnableWriter(id int) {
-	writers.Enable(id)
-}
-
-// Disable implemented log writer object by its ID.
-func DisableWriter(id int) {
-	writers.Disable(id)
-}
-
 // Write info level log to its own output stream. Then write it to the
 // log writers (that exists and set to enabled).
 func Info(msg string) {

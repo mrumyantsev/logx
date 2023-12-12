@@ -47,22 +47,22 @@ func main() {
 
 	log.Debug("message")
 
-	log.DisableWriter(_WRITER_MYSQL)
-	log.DisableWriter(_WRITER_FILE)
+	log.RemoveWriter(_WRITER_MYSQL)
+	log.RemoveWriter(_WRITER_FILE)
 
 	log.Warn("message")
 
-	log.DisableWriter(_WRITER_POSTGRES)
-	log.EnableWriter(_WRITER_FILE)
+	log.RemoveWriter(_WRITER_POSTGRES)
+	log.AddWriter(_WRITER_FILE, file)
 
 	file.ProvokeError() // look at this
 
 	log.Error("description", errors.New("some error occurred"))
 
 	log.RemoveWriter(_WRITER_MYSQL)
-	log.EnableWriter(_WRITER_POSTGRES)
-	log.EnableWriter(_WRITER_MYSQL)
-	log.EnableWriter(_WRITER_FILE)
+	log.AddWriter(_WRITER_POSTGRES, postgreSql)
+	log.AddWriter(_WRITER_MYSQL, mySql)
+	log.AddWriter(_WRITER_FILE, file)
 
 	log.Fatal("description", errors.New("it crashed, as was planned"))
 }
