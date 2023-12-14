@@ -48,7 +48,7 @@ func main() {
 
 	log.Warn("message")
 
-	file.ProvokeError() // attention! an error to show, how logger will handle it
+	file.ProvokeError() // attention! an error to show, how the logger will handle it
 
 	log.RemoveWriter(postgreSql)
 	log.AddWriter(mySql)
