@@ -20,7 +20,7 @@ const (
 var (
 	// defines initial configuration,
 	// when the application starts
-	config *multilog.Config = multilog.NewConfig()
+	config *multilog.Config = multilog.GetStartConfig()
 	// contains the log writer objects,
 	// that should be implemented by user
 	writers []Writer = nil
