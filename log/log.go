@@ -21,12 +21,15 @@ var (
 	// defines initial configuration,
 	// when the application starts
 	config *multilog.Config = multilog.GetStartConfig()
+
 	// contains the log writer objects,
 	// that should be implemented by user
 	writers []Writer = nil
+
 	// affects how writers slice
 	// will be accessed
 	writersCount int = 0
+
 	// to store the error, occurred by
 	// user's log writer
 	writerErr error = nil
@@ -44,7 +47,7 @@ type Writer interface {
 	WriteLog(datetime time.Time, level string, message string) error
 }
 
-// Add implemented log writer object with its ID.
+// Add implemented log writer object.
 func AddWriter(writer Writer) {
 	if writers == nil {
 		writers = []Writer{writer}
@@ -73,7 +76,7 @@ func AddWriter(writer Writer) {
 	writersCount++
 }
 
-// Remove implemented log writer object by its ID.
+// Remove implemented log writer object.
 func RemoveWriter(writer Writer) {
 	if writers == nil {
 		return
