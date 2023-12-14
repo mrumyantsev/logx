@@ -83,28 +83,26 @@ func (c *Config) InitEmptyFields() {
 		c.FatalLevelColor = defaults.EMPTY_STRING
 		c.MessageColor = defaults.EMPTY_STRING
 	} else {
-		colors := defaults.GetColors()
-
 		if c.DatetimeColor == defaults.EMPTY_STRING {
-			c.DatetimeColor = colors.DatetimeColor
+			c.DatetimeColor = defaults.DATETIME_COLOR
 		}
 		if c.InfoLevelColor == defaults.EMPTY_STRING {
-			c.InfoLevelColor = colors.InfoLevelColor
+			c.InfoLevelColor = defaults.INFO_LEVEL_COLOR
 		}
 		if c.DebugLevelColor == defaults.EMPTY_STRING {
-			c.DebugLevelColor = colors.DebugLevelColor
+			c.DebugLevelColor = defaults.DEBUG_LEVEL_COLOR
 		}
 		if c.WarnLevelColor == defaults.EMPTY_STRING {
-			c.WarnLevelColor = colors.WarnLevelColor
+			c.WarnLevelColor = defaults.WARN_LEVEL_COLOR
 		}
 		if c.ErrorLevelColor == defaults.EMPTY_STRING {
-			c.ErrorLevelColor = colors.ErrorLevelColor
+			c.ErrorLevelColor = defaults.ERROR_LEVEL_COLOR
 		}
 		if c.FatalLevelColor == defaults.EMPTY_STRING {
-			c.FatalLevelColor = colors.FatalLevelColor
+			c.FatalLevelColor = defaults.FATAL_LEVEL_COLOR
 		}
 		if c.MessageColor == defaults.EMPTY_STRING {
-			c.MessageColor = colors.MessageColor
+			c.MessageColor = defaults.MESSAGE_COLOR
 		}
 	}
 }
