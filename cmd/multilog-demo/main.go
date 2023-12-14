@@ -25,6 +25,7 @@ func main() {
 		FatalLevelText:     "fatal",
 		ItemSeparatorText:  "\t",
 		LineEndingText:     " (for console)\n",
+		InfoLevelColor:     defaults.COLOR_PREFIX + "34m",
 	}
 
 	log.ApplyConfig(logCfg)
