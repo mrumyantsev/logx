@@ -56,6 +56,10 @@ type Config struct {
 	// Default: "FTL"
 	FatalLevelText string
 
+	// Defines panic level text in the stream logs.
+	// Default: "PNC"
+	PanicLevelText string
+
 	// Defines datetime color in the stream logs.
 	// Default: defaults.COLOR_PREFIX + "90m"
 	DatetimeColor string
@@ -81,6 +85,11 @@ type Config struct {
 	// Default: defaults.COLOR_PREFIX + "1m" +
 	//          defaults.COLOR_PREFIX + "31m"
 	FatalLevelColor string
+
+	// Defines panic level color in the stream logs.
+	// Default: defaults.COLOR_PREFIX + "1m" +
+	//          defaults.COLOR_PREFIX + "31m"
+	PanicLevelColor string
 
 	// Defines message color in the stream logs.
 	// Default: defaults.COLOR_PREFIX + "0m"
@@ -134,6 +143,10 @@ func (c *Config) InitEmptyFields() {
 		c.FatalLevelText = defaults.FATAL_LEVEL_TEXT
 	}
 
+	if c.PanicLevelText == defaults.EMPTY_STRING {
+		c.PanicLevelText = defaults.PANIC_LEVEL_TEXT
+	}
+
 	if c.IsDisableColors {
 		c.DatetimeColor = defaults.EMPTY_STRING
 		c.InfoLevelColor = defaults.EMPTY_STRING
@@ -165,6 +178,10 @@ func (c *Config) InitEmptyFields() {
 
 		if c.FatalLevelColor == defaults.EMPTY_STRING {
 			c.FatalLevelColor = defaults.FATAL_LEVEL_COLOR
+		}
+
+		if c.PanicLevelColor == defaults.EMPTY_STRING {
+			c.PanicLevelColor = defaults.PANIC_LEVEL_COLOR
 		}
 
 		if c.MessageColor == defaults.EMPTY_STRING {

@@ -18,6 +18,7 @@ const (
 	WARN_LEVEL_TEXT     string = "WRN"
 	ERROR_LEVEL_TEXT    string = "ERR"
 	FATAL_LEVEL_TEXT    string = "FTL"
+	PANIC_LEVEL_TEXT    string = "PNC"
 
 	DATETIME_COLOR    string = COLOR_PREFIX + "90m"
 	INFO_LEVEL_COLOR  string = COLOR_PREFIX + "32m"
@@ -25,6 +26,7 @@ const (
 	WARN_LEVEL_COLOR  string = COLOR_PREFIX + "31m"
 	ERROR_LEVEL_COLOR string = COLOR_PREFIX + "1m" + WARN_LEVEL_COLOR
 	FATAL_LEVEL_COLOR string = ERROR_LEVEL_COLOR
+	PANIC_LEVEL_COLOR string = ERROR_LEVEL_COLOR
 	MESSAGE_COLOR     string = COLOR_PREFIX + "0m"
 )
 

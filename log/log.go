@@ -244,6 +244,33 @@ func FatalWithCode(desc string, err error, exitCode int) {
 	os.Exit(exitCode)
 }
 
+// Write panic level log to its own output stream. Then write it to the
+// log writers (that exists and set to enabled). Then call standard
+// panic in the current goroutine.
+func Panic(desc string, err error) {
+	var datetime time.Time = time.Now()
+
+	desc = desc + _ERROR_INSERT + err.Error()
+
+	writeToStream(
+		&datetime,
+		&config.PanicLevelText,
+		&config.PanicLevelColor,
+		&desc,
+		config.OutputStream,
+	)
+
+	if writers != nil {
+		writeToWriters(
+			&datetime,
+			&config.PanicLevelText,
+			&desc,
+		)
+	}
+
+	panic(desc)
+}
+
 // Write to output stream function. The only function, that does not
 // handle the error (if it will occur).
 func writeToStream(
