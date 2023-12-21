@@ -64,6 +64,9 @@ var (
 func ApplyConfig(cfg *multilog.Config) {
 	cfg.InitEmptyFields()
 
+	isDisableDebugLogs = cfg.IsDisableDebugLogs
+	isDisableWarnLogs = cfg.IsDisableWarnLogs
+
 	if cfg.IsDisableColors {
 		datetimeColor = defaults.EMPTY_STRING
 		infoLevelColor = defaults.EMPTY_STRING
