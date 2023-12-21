@@ -16,16 +16,7 @@ const (
 
 func main() {
 	logCfg := &multilog.Config{
-		IsDisableDebugLogs: false,
-		IsDisableWarnLogs:  false,
-		InfoLevelText:      "info",
-		DebugLevelText:     "debug",
-		WarnLevelText:      "warn",
-		ErrorLevelText:     "error",
-		FatalLevelText:     "fatal",
-		ItemSeparatorText:  "\t",
-		LineEndingText:     " (for console)\n",
-		InfoLevelColor:     defaults.COLOR_PREFIX + "34m",
+		TimeFormat: time.RFC3339Nano,
 	}
 
 	log.ApplyConfig(logCfg)
@@ -48,7 +39,10 @@ func main() {
 
 	log.Warn("message")
 
-	file.ProvokeError() // attention! an error to show, how the logger will handle it
+	// an error is put to a writer to
+	// break it and show, how the logger
+	// will handle that situation
+	file.ProvokeError()
 
 	log.RemoveWriter(postgreSql)
 	log.AddWriter(mySql)

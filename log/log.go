@@ -6,39 +6,88 @@ import (
 	"time"
 
 	"github.com/mrumyantsev/multilog"
+	"github.com/mrumyantsev/multilog/defaults"
 )
 
 // Logger working constants.
 const (
-	// inserts between the error and
-	// its description. Used in error
-	// and fatal level logging functions
+	// insert between the error and
+	// its description. Used in error,
+	// fatal and panic level logging
+	// functions
 	_ERROR_INSERT string = ". error: "
 )
 
 // Logger working variables.
 var (
-	// defines initial configuration,
-	// when the application starts
-	config *multilog.Config = multilog.GetStartConfig()
+	// flags to disable logs execution
+	isDisableDebugLogs bool = false
+	isDisableWarnLogs  bool = false
 
-	// contains the log writer objects,
-	// that should be implemented by user
+	// utility text parts for stream logs
+	itemSeparatorText string = defaults.ITEM_SEPARATOR_TEXT
+	lineEndingText    string = defaults.LINE_ENDING_TEXT
+
+	// level text for stream logs
+	infoLevelText  string = defaults.INFO_LEVEL_TEXT
+	debugLevelText string = defaults.DEBUG_LEVEL_TEXT
+	warnLevelText  string = defaults.WARN_LEVEL_TEXT
+	errorLevelText string = defaults.ERROR_LEVEL_TEXT
+	fatalLevelText string = defaults.FATAL_LEVEL_TEXT
+	panicLevelText string = defaults.PANIC_LEVEL_TEXT
+
+	// colors of level text for stream logs
+	datetimeColor   string = defaults.DATETIME_COLOR
+	infoLevelColor  string = defaults.INFO_LEVEL_COLOR
+	debugLevelColor string = defaults.DEBUG_LEVEL_COLOR
+	warnLevelColor  string = defaults.WARN_LEVEL_COLOR
+	errorLevelColor string = defaults.ERROR_LEVEL_COLOR
+	fatalLevelColor string = defaults.FATAL_LEVEL_COLOR
+	panicLevelColor string = defaults.PANIC_LEVEL_COLOR
+	messageColor    string = defaults.MESSAGE_COLOR
+
+	// datetime patten for stream logs
+	timeFormat string = defaults.TIME_FORMAT
+
+	// data stream pointer for stream logs
+	outputStream *os.File = defaults.GetOutputStream()
+
+	// log writer interface objects
 	writers []Writer = nil
 
-	// affects how writers slice
-	// will be accessed
+	// log writers total count
 	writersCount int = 0
 
-	// to store the error, occurred by
-	// user's log writer
+	// log writer error
 	writerErr error = nil
 )
 
 // Apply the configuration, that was created by user, to logger.
 func ApplyConfig(cfg *multilog.Config) {
 	cfg.InitEmptyFields()
-	config = cfg
+
+	if cfg.IsDisableColors {
+		datetimeColor = defaults.EMPTY_STRING
+		infoLevelColor = defaults.EMPTY_STRING
+		debugLevelColor = defaults.EMPTY_STRING
+		warnLevelColor = defaults.EMPTY_STRING
+		errorLevelColor = defaults.EMPTY_STRING
+		fatalLevelColor = defaults.EMPTY_STRING
+		panicLevelColor = defaults.EMPTY_STRING
+		messageColor = defaults.EMPTY_STRING
+	} else {
+		datetimeColor = defaults.DATETIME_COLOR
+		infoLevelColor = defaults.INFO_LEVEL_COLOR
+		debugLevelColor = defaults.DEBUG_LEVEL_COLOR
+		warnLevelColor = defaults.WARN_LEVEL_COLOR
+		errorLevelColor = defaults.ERROR_LEVEL_COLOR
+		fatalLevelColor = defaults.FATAL_LEVEL_COLOR
+		panicLevelColor = defaults.PANIC_LEVEL_COLOR
+		messageColor = defaults.MESSAGE_COLOR
+	}
+
+	timeFormat = cfg.TimeFormat
+	outputStream = cfg.OutputStream
 }
 
 // A log writer's interface, that need to implement by user's object,
@@ -99,16 +148,16 @@ func Info(msg string) {
 
 	writeToStream(
 		&datetime,
-		&config.InfoLevelText,
-		&config.InfoLevelColor,
+		&infoLevelText,
+		&infoLevelColor,
 		&msg,
-		config.OutputStream,
+		outputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&config.InfoLevelText,
+			&infoLevelText,
 			&msg,
 		)
 	}
@@ -117,7 +166,7 @@ func Info(msg string) {
 // Write debug level log to its own output stream. Then write it to the
 // log writers (that exists and set to enabled).
 func Debug(msg string) {
-	if config.IsDisableDebugLogs {
+	if isDisableDebugLogs {
 		return
 	}
 
@@ -125,16 +174,16 @@ func Debug(msg string) {
 
 	writeToStream(
 		&datetime,
-		&config.DebugLevelText,
-		&config.DebugLevelColor,
+		&debugLevelText,
+		&debugLevelColor,
 		&msg,
-		config.OutputStream,
+		outputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&config.DebugLevelText,
+			&debugLevelText,
 			&msg,
 		)
 	}
@@ -143,7 +192,7 @@ func Debug(msg string) {
 // Write warn level log to its own output stream. Then write it to the
 // log writers (that exists and set to enabled).
 func Warn(msg string) {
-	if config.IsDisableWarnLogs {
+	if isDisableWarnLogs {
 		return
 	}
 
@@ -151,16 +200,16 @@ func Warn(msg string) {
 
 	writeToStream(
 		&datetime,
-		&config.WarnLevelText,
-		&config.WarnLevelColor,
+		&warnLevelText,
+		&warnLevelColor,
 		&msg,
-		config.OutputStream,
+		outputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&config.WarnLevelText,
+			&warnLevelText,
 			&msg,
 		)
 	}
@@ -175,16 +224,16 @@ func Error(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&config.ErrorLevelText,
-		&config.ErrorLevelColor,
+		&errorLevelText,
+		&errorLevelColor,
 		&desc,
-		config.OutputStream,
+		outputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&config.ErrorLevelText,
+			&errorLevelText,
 			&desc,
 		)
 	}
@@ -200,16 +249,16 @@ func Fatal(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&config.FatalLevelText,
-		&config.FatalLevelColor,
+		&fatalLevelText,
+		&fatalLevelColor,
 		&desc,
-		config.OutputStream,
+		outputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&config.FatalLevelText,
+			&fatalLevelText,
 			&desc,
 		)
 	}
@@ -227,16 +276,16 @@ func FatalWithCode(desc string, err error, exitCode int) {
 
 	writeToStream(
 		&datetime,
-		&config.FatalLevelText,
-		&config.FatalLevelColor,
+		&fatalLevelText,
+		&fatalLevelColor,
 		&desc,
-		config.OutputStream,
+		outputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&config.FatalLevelText,
+			&fatalLevelText,
 			&desc,
 		)
 	}
@@ -254,16 +303,16 @@ func Panic(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&config.PanicLevelText,
-		&config.PanicLevelColor,
+		&panicLevelText,
+		&panicLevelColor,
 		&desc,
-		config.OutputStream,
+		outputStream,
 	)
 
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&config.PanicLevelText,
+			&panicLevelText,
 			&desc,
 		)
 	}
@@ -282,15 +331,15 @@ func writeToStream(
 ) {
 	stream.Write(
 		[]byte(
-			config.DatetimeColor +
-				(*datetime).Format(config.TimeFormat) +
-				config.ItemSeparatorText +
+			datetimeColor +
+				(*datetime).Format(timeFormat) +
+				itemSeparatorText +
 				*levelColor +
 				*level +
-				config.ItemSeparatorText +
-				config.MessageColor +
+				itemSeparatorText +
+				messageColor +
 				*message +
-				config.LineEndingText,
+				lineEndingText,
 		),
 	)
 }
@@ -330,10 +379,10 @@ func writeToWriters(
 
 			writeToStream(
 				datetime,
-				&config.ErrorLevelText,
-				&config.ErrorLevelColor,
+				&errorLevelText,
+				&errorLevelColor,
 				&desc,
-				config.OutputStream,
+				outputStream,
 			)
 		}
 	}
