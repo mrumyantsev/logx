@@ -9,7 +9,6 @@ import (
 	"github.com/mrumyantsev/multilog/defaults"
 )
 
-// Logger working constants.
 const (
 	// insert between the error and
 	// its description. Used in error,
@@ -18,25 +17,24 @@ const (
 	_ERROR_INSERT string = ". error: "
 )
 
-// Logger working variables.
 var (
 	// flags to disable logs execution
 	isDisableDebugLogs bool = false
 	isDisableWarnLogs  bool = false
 
-	// utility text parts for stream logs
-	itemSeparatorText string = defaults.ITEM_SEPARATOR_TEXT
-	lineEndingText    string = defaults.LINE_ENDING_TEXT
+	// utility text parts for the stream logs
+	itemSeparator string = defaults.ITEM_SEPARATOR
+	lineEnding    string = defaults.LINE_ENDING
 
-	// level text for stream logs
-	infoLevelText  string = defaults.INFO_LEVEL_TEXT
-	debugLevelText string = defaults.DEBUG_LEVEL_TEXT
-	warnLevelText  string = defaults.WARN_LEVEL_TEXT
-	errorLevelText string = defaults.ERROR_LEVEL_TEXT
-	fatalLevelText string = defaults.FATAL_LEVEL_TEXT
-	panicLevelText string = defaults.PANIC_LEVEL_TEXT
+	// level text for the stream logs
+	infoLevel  string = defaults.INFO_LEVEL
+	debugLevel string = defaults.DEBUG_LEVEL
+	warnLevel  string = defaults.WARN_LEVEL
+	errorLevel string = defaults.ERROR_LEVEL
+	fatalLevel string = defaults.FATAL_LEVEL
+	panicLevel string = defaults.PANIC_LEVEL
 
-	// colors of level text for stream logs
+	// colors of level text for the stream logs
 	datetimeColor   string = defaults.DATETIME_COLOR
 	infoLevelColor  string = defaults.INFO_LEVEL_COLOR
 	debugLevelColor string = defaults.DEBUG_LEVEL_COLOR
@@ -46,23 +44,23 @@ var (
 	panicLevelColor string = defaults.PANIC_LEVEL_COLOR
 	messageColor    string = defaults.MESSAGE_COLOR
 
-	// datetime patten for stream logs
+	// datetime patten for the stream logs
 	timeFormat string = defaults.TIME_FORMAT
 
-	// data stream pointer for stream logs
+	// data stream pointer for the stream logs
 	outputStream *os.File = defaults.GetOutputStream()
 
 	// log writer interface objects
 	writers []Writer = nil
 
-	// log writers total count
-	writersCount int = 0
+	// log writers slice length
+	writersLength int = 0
 
 	// log writer error
 	writerErr error = nil
 )
 
-// Apply the configuration, that was created by user, to logger.
+// Apply new configuration to the logger.
 func ApplyConfig(cfg *multilog.Config) {
 	cfg.InitEmptyFields()
 
@@ -90,65 +88,67 @@ func ApplyConfig(cfg *multilog.Config) {
 	outputStream = cfg.OutputStream
 }
 
-// A log writer's interface, that need to implement by user's object,
-// that able to write logs.
+// Log writer interface. Any implemented objects are assumed to be
+// supplemental log writers to the logger. Implement this interface
+// with your custom writer and add it to logger by calling the
+// AddWriter() method, and the logger will send logs to it.
 type Writer interface {
 	WriteLog(datetime time.Time, level string, message string) error
 }
 
-// Add implemented log writer object.
-func AddWriter(writer Writer) {
+// Add log writer, so the logger can call it to do logs with it.
+func AddWriter(w Writer) {
 	if writers == nil {
-		writers = []Writer{writer}
-		writersCount = 1
+		writers = []Writer{w}
+		writersLength = 1
 		return
 	}
 
 	var i int = 0
 
-	for ; i < writersCount; i++ {
-		if writers[i] == writer {
+	for ; i < writersLength; i++ {
+		if writers[i] == w {
 			return
 		}
 	}
 
 	i = 0
 
-	for ; i < writersCount; i++ {
+	for ; i < writersLength; i++ {
 		if writers[i] == nil {
-			writers[i] = writer
+			writers[i] = w
 			return
 		}
 	}
 
-	writers = append(writers, writer)
-	writersCount++
+	writers = append(writers, w)
+	writersLength++
 }
 
-// Remove implemented log writer object.
-func RemoveWriter(writer Writer) {
+// Remove log writer, so the logger can not call it any more to do logs.
+func RemoveWriter(w Writer) {
 	if writers == nil {
 		return
 	}
 
 	var i int = 0
 
-	for ; i < writersCount; i++ {
-		if writers[i] == writer {
+	for ; i < writersLength; i++ {
+		if writers[i] == w {
 			writers[i] = nil
 			return
 		}
 	}
 }
 
-// Write info level log to its own output stream. Then write it to the
-// log writers (that exists and set to enabled).
+// Write the info level log to stream, then write it by all of the log
+// writers (if they were added).
 func Info(msg string) {
 	var datetime time.Time = time.Now()
 
 	writeToStream(
 		&datetime,
-		&infoLevelText,
+		&infoLevel,
 		&infoLevelColor,
 		&msg,
 		outputStream,
@@ -157,14 +157,14 @@ func Info(msg string) {
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&infoLevelText,
+			&infoLevel,
 			&msg,
 		)
 	}
 }
 
-// Write debug level log to its own output stream. Then write it to the
-// log writers (that exists and set to enabled).
+// Write the debug level log to stream, then write it by all of the log
+// writers (if they were added).
 func Debug(msg string) {
 	if isDisableDebugLogs {
 		return
@@ -174,7 +174,7 @@ func Debug(msg string) {
 
 	writeToStream(
 		&datetime,
-		&debugLevelText,
+		&debugLevel,
 		&debugLevelColor,
 		&msg,
 		outputStream,
@@ -183,14 +183,14 @@ func Debug(msg string) {
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&debugLevelText,
+			&debugLevel,
 			&msg,
 		)
 	}
 }
 
-// Write warn level log to its own output stream. Then write it to the
-// log writers (that exists and set to enabled).
+// Write the warning level log to stream, then write it by all of the log
+// writers (if they were added).
 func Warn(msg string) {
 	if isDisableWarnLogs {
 		return
@@ -200,7 +200,7 @@ func Warn(msg string) {
 
 	writeToStream(
 		&datetime,
-		&warnLevelText,
+		&warnLevel,
 		&warnLevelColor,
 		&msg,
 		outputStream,
@@ -209,14 +209,14 @@ func Warn(msg string) {
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&warnLevelText,
+			&warnLevel,
 			&msg,
 		)
 	}
 }
 
-// Write error level log to its own output stream. Then write it to the
-// log writers (that exists and set to enabled).
+// Write the error level log to stream, then write it by all of the log
+// writers (if they were added).
 func Error(desc string, err error) {
 	var datetime time.Time = time.Now()
 
@@ -224,7 +224,7 @@ func Error(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&errorLevelText,
+		&errorLevel,
 		&errorLevelColor,
 		&desc,
 		outputStream,
@@ -233,15 +233,15 @@ func Error(desc string, err error) {
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&errorLevelText,
+			&errorLevel,
 			&desc,
 		)
 	}
 }
 
-// Write fatal level log to its own output stream. Then write it to the
-// log writers (that exists and set to enabled). Exits the program at
-// the end with the exit code 1.
+// Write the fatal level log to stream, then write it by all of the log
+// writers (if they were added). Then exit the program at the end with
+// the exit code 1.
 func Fatal(desc string, err error) {
 	var datetime time.Time = time.Now()
 
@@ -249,7 +249,7 @@ func Fatal(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&fatalLevelText,
+		&fatalLevel,
 		&fatalLevelColor,
 		&desc,
 		outputStream,
@@ -258,7 +258,7 @@ func Fatal(desc string, err error) {
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&fatalLevelText,
+			&fatalLevel,
 			&desc,
 		)
 	}
@@ -266,9 +266,9 @@ func Fatal(desc string, err error) {
 	os.Exit(1)
 }
 
-// Write fatal level log to its own output stream. Then write it to the
-// log writers (that exists and set to enabled). Exits the program at
-// the end with the exit code that set in argument.
+// Write the fatal level log to stream, then write it by all of the log
+// writers (if they were added). Then exit the program at the end with
+// the exit code that set by the exitCode argument.
 func FatalWithCode(desc string, err error, exitCode int) {
 	var datetime time.Time = time.Now()
 
@@ -276,7 +276,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 
 	writeToStream(
 		&datetime,
-		&fatalLevelText,
+		&fatalLevel,
 		&fatalLevelColor,
 		&desc,
 		outputStream,
@@ -285,7 +285,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&fatalLevelText,
+			&fatalLevel,
 			&desc,
 		)
 	}
@@ -293,9 +293,9 @@ func FatalWithCode(desc string, err error, exitCode int) {
 	os.Exit(exitCode)
 }
 
-// Write panic level log to its own output stream. Then write it to the
-// log writers (that exists and set to enabled). Then call standard
-// panic in the current goroutine.
+// Write the panic level log to stream, then write it by all of the log
+// writers (if they were added). Then call a standard panic in the
+// current goroutine.
 func Panic(desc string, err error) {
 	var datetime time.Time = time.Now()
 
@@ -303,7 +303,7 @@ func Panic(desc string, err error) {
 
 	writeToStream(
 		&datetime,
-		&panicLevelText,
+		&panicLevel,
 		&panicLevelColor,
 		&desc,
 		outputStream,
@@ -312,7 +312,7 @@ func Panic(desc string, err error) {
 	if writers != nil {
 		writeToWriters(
 			&datetime,
-			&panicLevelText,
+			&panicLevel,
 			&desc,
 		)
 	}
@@ -320,8 +320,7 @@ func Panic(desc string, err error) {
 	panic(desc)
 }
 
-// Write to output stream function. The only function, that does not
-// handle the error (if it will occur).
+// Write the log to the stream.
 func writeToStream(
 	datetime *time.Time,
 	level *string,
@@ -333,20 +332,18 @@ func writeToStream(
 		[]byte(
 			datetimeColor +
 				(*datetime).Format(timeFormat) +
-				itemSeparatorText +
+				itemSeparator +
 				*levelColor +
 				*level +
-				itemSeparatorText +
+				itemSeparator +
 				messageColor +
 				*message +
-				lineEndingText,
+				lineEnding,
 		),
 	)
 }
 
-// Write to log writers function. Does loop calling WriteLog() method
-// for every log writer object, that stored in the logger, and also
-// that has isEnabled=true flag.
+// Write the logs by the log writers, that been added to the logger.
 func writeToWriters(
 	datetime *time.Time,
 	level *string,
@@ -357,29 +354,29 @@ func writeToWriters(
 		writer Writer = nil
 	)
 
-	for ; i < writersCount; i++ {
+	for ; i < writersLength; i++ {
 		writer = writers[i]
 
 		if writer == nil {
 			continue
 		}
 
-		// writes current log to enabled log writer
+		// write current log by the log writer
 		writerErr = writer.WriteLog(
 			*datetime,
 			*level,
 			*message,
 		)
 		if writerErr != nil {
-			// writes error level log to error output
-			// stream, when the error occurs
+			// write the error level log to the
+			// stream, if the error occurs
 			var desc string = fmt.Sprintf(
 				"could not write to log writer=%T", writer) +
 				_ERROR_INSERT + writerErr.Error()
 
 			writeToStream(
 				datetime,
-				&errorLevelText,
+				&errorLevel,
 				&errorLevelColor,
 				&desc,
 				outputStream,

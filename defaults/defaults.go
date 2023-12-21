@@ -11,14 +11,14 @@ const (
 
 	TIME_FORMAT string = "2006-01-02T15:04:05-07:00"
 
-	ITEM_SEPARATOR_TEXT string = " "
-	LINE_ENDING_TEXT    string = "\n"
-	INFO_LEVEL_TEXT     string = "INF"
-	DEBUG_LEVEL_TEXT    string = "DBG"
-	WARN_LEVEL_TEXT     string = "WRN"
-	ERROR_LEVEL_TEXT    string = "ERR"
-	FATAL_LEVEL_TEXT    string = "FTL"
-	PANIC_LEVEL_TEXT    string = "PNC"
+	ITEM_SEPARATOR string = " "
+	LINE_ENDING    string = "\n"
+	INFO_LEVEL     string = "INF"
+	DEBUG_LEVEL    string = "DBG"
+	WARN_LEVEL     string = "WRN"
+	ERROR_LEVEL    string = "ERR"
+	FATAL_LEVEL    string = "FTL"
+	PANIC_LEVEL    string = "PNC"
 
 	DATETIME_COLOR    string = COLOR_PREFIX + "90m"
 	INFO_LEVEL_COLOR  string = COLOR_PREFIX + "32m"
