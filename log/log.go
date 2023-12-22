@@ -49,6 +49,9 @@ var (
 
 	// log writers slice length
 	writersLength uint8 = 0
+
+	// log writers total count
+	writersCount uint8 = 0
 )
 
 // Apply new configuration to the logger.
@@ -91,6 +94,7 @@ func AddWriter(w Writer) {
 	if writers == nil {
 		writers = []Writer{w}
 		writersLength = 1
+		writersCount = 1
 		return
 	}
 
@@ -107,12 +111,14 @@ func AddWriter(w Writer) {
 	for ; i < writersLength; i++ {
 		if writers[i] == nil {
 			writers[i] = w
+			writersCount++
 			return
 		}
 	}
 
 	writers = append(writers, w)
 	writersLength++
+	writersCount++
 }
 
 // Remove log writer, so the logger can not call it any more to do logs.
@@ -126,6 +132,7 @@ func RemoveWriter(w Writer) {
 	for ; i < writersLength; i++ {
 		if writers[i] == w {
 			writers[i] = nil
+			writersCount--
 			return
 		}
 	}
@@ -144,7 +151,7 @@ func Info(msg string) {
 		outputStream,
 	)
 
-	if writers != nil {
+	if writersCount > 0 {
 		writeToWriters(
 			&datetime,
 			&infoLevel,
@@ -170,7 +177,7 @@ func Debug(msg string) {
 		outputStream,
 	)
 
-	if writers != nil {
+	if writersCount > 0 {
 		writeToWriters(
 			&datetime,
 			&debugLevel,
@@ -196,7 +203,7 @@ func Warn(msg string) {
 		outputStream,
 	)
 
-	if writers != nil {
+	if writersCount > 0 {
 		writeToWriters(
 			&datetime,
 			&warnLevel,
@@ -220,7 +227,7 @@ func Error(desc string, err error) {
 		outputStream,
 	)
 
-	if writers != nil {
+	if writersCount > 0 {
 		writeToWriters(
 			&datetime,
 			&errorLevel,
@@ -245,7 +252,7 @@ func Fatal(desc string, err error) {
 		outputStream,
 	)
 
-	if writers != nil {
+	if writersCount > 0 {
 		writeToWriters(
 			&datetime,
 			&fatalLevel,
@@ -272,7 +279,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 		outputStream,
 	)
 
-	if writers != nil {
+	if writersCount > 0 {
 		writeToWriters(
 			&datetime,
 			&fatalLevel,
@@ -299,7 +306,7 @@ func Panic(desc string, err error) {
 		outputStream,
 	)
 
-	if writers != nil {
+	if writersCount > 0 {
 		writeToWriters(
 			&datetime,
 			&panicLevel,
