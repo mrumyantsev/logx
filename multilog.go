@@ -31,8 +31,8 @@ type Config struct {
 
 // Initialize fields, that were not set by user, with its default values.
 func (c *Config) InitEmptyFields() {
-	if c.TimeFormat == defaults.EMPTY_STRING {
-		c.TimeFormat = defaults.TIME_FORMAT
+	if c.TimeFormat == defaults.EmptyString {
+		c.TimeFormat = defaults.TimeFormat
 	}
 
 	if c.OutputStream == nil {

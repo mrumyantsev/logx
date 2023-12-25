@@ -68,7 +68,7 @@ func (f *FileController) WriteLog(datetime time.Time, level string, message stri
 	}
 
 	fmt.Println(fmt.Sprintf(
-		_WRITER_ACCEPTING_EXAMPLE, f.Destination, datetime.Format(defaults.TIME_FORMAT), level, message))
+		_WRITER_ACCEPTING_EXAMPLE, f.Destination, datetime.Format(defaults.TimeFormat), level, message))
 
 	return nil
 }
@@ -85,7 +85,7 @@ type DatabaseController struct {
 
 func (d *DatabaseController) WriteLog(datetime time.Time, level string, message string) error {
 	fmt.Println(fmt.Sprintf(
-		_WRITER_ACCEPTING_EXAMPLE, d.Destination, datetime.Format(defaults.TIME_FORMAT), level, message))
+		_WRITER_ACCEPTING_EXAMPLE, d.Destination, datetime.Format(defaults.TimeFormat), level, message))
 
 	return nil
 }

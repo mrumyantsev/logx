@@ -6,26 +6,26 @@ import (
 
 // Constants, that defines the presentation of logs.
 const (
-	EMPTY_STRING string = ""
-	COLOR_PREFIX string = string(27) + "["
+	EmptyString string = ""
+	Space       string = " "
+	EndOfLine   string = "\n"
+	ColorPrefix string = string(27) + "["
 
-	TIME_FORMAT string = "2006-01-02T15:04:05-07:00"
+	InfoLevel  string = "INF"
+	DebugLevel string = "DBG"
+	WarnLevel  string = "WRN"
+	ErrorLevel string = "ERR"
+	FatalLevel string = "FTL"
+	PanicLevel string = "PNC"
 
-	ITEM_SEPARATOR string = " "
-	LINE_ENDING    string = "\n"
-	INFO_LEVEL     string = "INF"
-	DEBUG_LEVEL    string = "DBG"
-	WARN_LEVEL     string = "WRN"
-	ERROR_LEVEL    string = "ERR"
-	FATAL_LEVEL    string = "FTL"
-	PANIC_LEVEL    string = "PNC"
+	RegularColor string = ColorPrefix + "0m"
+	GrayColor    string = ColorPrefix + "90m"
+	GreenColor   string = ColorPrefix + "32m"
+	YellowColor  string = ColorPrefix + "33m"
+	RedColor     string = ColorPrefix + "31m"
+	BoldRedColor string = ColorPrefix + "1m" + RedColor
 
-	GRAY_COLOR     string = COLOR_PREFIX + "90m"
-	GREEN_COLOR    string = COLOR_PREFIX + "32m"
-	YELLOW_COLOR   string = COLOR_PREFIX + "33m"
-	RED_COLOR      string = COLOR_PREFIX + "31m"
-	RED_BOLD_COLOR string = COLOR_PREFIX + "1m" + RED_COLOR
-	REGULAR_COLOR  string = COLOR_PREFIX + "0m"
+	TimeFormat string = "2006-01-02T15:04:05-07:00"
 )
 
 var (

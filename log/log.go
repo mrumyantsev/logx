@@ -14,7 +14,7 @@ const (
 	// its description. Used in error,
 	// fatal and panic level logging
 	// functions
-	_ERROR_INSERT string = ". error: "
+	errorInsert string = ". error: "
 )
 
 var (
@@ -23,23 +23,23 @@ var (
 	isDisableWarnLogs  bool = false
 
 	// level text for the stream logs
-	infoLevel  string = defaults.INFO_LEVEL
-	debugLevel string = defaults.DEBUG_LEVEL
-	warnLevel  string = defaults.WARN_LEVEL
-	errorLevel string = defaults.ERROR_LEVEL
-	fatalLevel string = defaults.FATAL_LEVEL
-	panicLevel string = defaults.PANIC_LEVEL
+	infoLevel  string = defaults.InfoLevel
+	debugLevel string = defaults.DebugLevel
+	warnLevel  string = defaults.WarnLevel
+	errorLevel string = defaults.ErrorLevel
+	fatalLevel string = defaults.FatalLevel
+	panicLevel string = defaults.PanicLevel
 
 	// colors of level text for the stream logs
-	grayColor    string = defaults.GRAY_COLOR
-	greenColor   string = defaults.GREEN_COLOR
-	yellowColor  string = defaults.YELLOW_COLOR
-	redColor     string = defaults.RED_COLOR
-	redBoldColor string = defaults.RED_BOLD_COLOR
-	regularColor string = defaults.REGULAR_COLOR
+	regularColor string = defaults.RegularColor
+	grayColor    string = defaults.GrayColor
+	greenColor   string = defaults.GreenColor
+	yellowColor  string = defaults.YellowColor
+	redColor     string = defaults.RedColor
+	boldRedColor string = defaults.BoldRedColor
 
 	// datetime patten for the stream logs
-	timeFormat string = defaults.TIME_FORMAT
+	timeFormat string = defaults.TimeFormat
 
 	// data stream pointer for the stream logs
 	outputStream *os.File = defaults.GetOutputStream()
@@ -62,19 +62,19 @@ func ApplyConfig(cfg *multilog.Config) {
 	isDisableWarnLogs = cfg.IsDisableWarnLogs
 
 	if cfg.IsDisableColors {
-		grayColor = defaults.EMPTY_STRING
-		greenColor = defaults.EMPTY_STRING
-		yellowColor = defaults.EMPTY_STRING
-		redColor = defaults.EMPTY_STRING
-		redBoldColor = defaults.EMPTY_STRING
-		regularColor = defaults.EMPTY_STRING
+		regularColor = defaults.EmptyString
+		grayColor = defaults.EmptyString
+		greenColor = defaults.EmptyString
+		yellowColor = defaults.EmptyString
+		redColor = defaults.EmptyString
+		boldRedColor = defaults.EmptyString
 	} else {
-		grayColor = defaults.GRAY_COLOR
-		greenColor = defaults.GREEN_COLOR
-		yellowColor = defaults.YELLOW_COLOR
-		redColor = defaults.RED_COLOR
-		redBoldColor = defaults.RED_BOLD_COLOR
-		regularColor = defaults.REGULAR_COLOR
+		regularColor = defaults.RegularColor
+		grayColor = defaults.GrayColor
+		greenColor = defaults.GreenColor
+		yellowColor = defaults.YellowColor
+		redColor = defaults.RedColor
+		boldRedColor = defaults.BoldRedColor
 	}
 
 	timeFormat = cfg.TimeFormat
@@ -217,12 +217,12 @@ func Warn(msg string) {
 func Error(desc string, err error) {
 	var datetime time.Time = time.Now()
 
-	desc = desc + _ERROR_INSERT + err.Error()
+	desc = desc + errorInsert + err.Error()
 
 	writeToStream(
 		&datetime,
 		&errorLevel,
-		&redBoldColor,
+		&boldRedColor,
 		&desc,
 		outputStream,
 	)
@@ -242,12 +242,12 @@ func Error(desc string, err error) {
 func Fatal(desc string, err error) {
 	var datetime time.Time = time.Now()
 
-	desc = desc + _ERROR_INSERT + err.Error()
+	desc = desc + errorInsert + err.Error()
 
 	writeToStream(
 		&datetime,
 		&fatalLevel,
-		&redBoldColor,
+		&boldRedColor,
 		&desc,
 		outputStream,
 	)
@@ -269,12 +269,12 @@ func Fatal(desc string, err error) {
 func FatalWithCode(desc string, err error, exitCode int) {
 	var datetime time.Time = time.Now()
 
-	desc = desc + _ERROR_INSERT + err.Error()
+	desc = desc + errorInsert + err.Error()
 
 	writeToStream(
 		&datetime,
 		&fatalLevel,
-		&redBoldColor,
+		&boldRedColor,
 		&desc,
 		outputStream,
 	)
@@ -296,12 +296,12 @@ func FatalWithCode(desc string, err error, exitCode int) {
 func Panic(desc string, err error) {
 	var datetime time.Time = time.Now()
 
-	desc = desc + _ERROR_INSERT + err.Error()
+	desc = desc + errorInsert + err.Error()
 
 	writeToStream(
 		&datetime,
 		&panicLevel,
-		&redBoldColor,
+		&boldRedColor,
 		&desc,
 		outputStream,
 	)
@@ -329,13 +329,13 @@ func writeToStream(
 		[]byte(
 			grayColor +
 				(*datetime).Format(timeFormat) +
-				defaults.ITEM_SEPARATOR +
+				defaults.Space +
 				*levelColor +
 				*level +
-				defaults.ITEM_SEPARATOR +
+				defaults.Space +
 				regularColor +
 				*message +
-				defaults.LINE_ENDING,
+				defaults.EndOfLine,
 		),
 	)
 }
@@ -370,12 +370,12 @@ func writeToWriters(
 			// stream, if the error occurs
 			var desc string = fmt.Sprintf(
 				"could not write to log writer=%T", writer) +
-				_ERROR_INSERT + err.Error()
+				errorInsert + err.Error()
 
 			writeToStream(
 				datetime,
 				&errorLevel,
-				&redBoldColor,
+				&boldRedColor,
 				&desc,
 				outputStream,
 			)
