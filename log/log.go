@@ -1,6 +1,7 @@
 package log
 
 import (
+	"container/list"
 	"fmt"
 	"os"
 	"time"
@@ -45,13 +46,7 @@ var (
 	outputStream *os.File = defaults.GetOutputStream()
 
 	// log writer interface objects
-	writers []Writer = nil
-
-	// log writers slice length
-	writersLength uint8 = 0
-
-	// log writers total count
-	writersCount uint8 = 0
+	writers *list.List = list.New()
 )
 
 // Apply new configuration to the logger.
@@ -91,48 +86,14 @@ type Writer interface {
 
 // Add log writer, so the logger can call it to do logs with it.
 func AddWriter(w Writer) {
-	if writers == nil {
-		writers = []Writer{w}
-		writersLength = 1
-		writersCount = 1
-		return
-	}
-
-	var i uint8 = 0
-
-	for ; i < writersLength; i++ {
-		if writers[i] == w {
-			return
-		}
-	}
-
-	i = 0
-
-	for ; i < writersLength; i++ {
-		if writers[i] == nil {
-			writers[i] = w
-			writersCount++
-			return
-		}
-	}
-
-	writers = append(writers, w)
-	writersLength++
-	writersCount++
+	writers.PushBack(w)
 }
 
 // Remove log writer, so the logger can not call it any more to do logs.
 func RemoveWriter(w Writer) {
-	if writers == nil {
-		return
-	}
-
-	var i uint8 = 0
-
-	for ; i < writersLength; i++ {
-		if writers[i] == w {
-			writers[i] = nil
-			writersCount--
+	for e := writers.Front(); e != nil; e = e.Next() {
+		if e.Value.(Writer) == w {
+			writers.Remove(e)
 			return
 		}
 	}
@@ -151,7 +112,7 @@ func Info(msg string) {
 		outputStream,
 	)
 
-	if writersCount > 0 {
+	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
 			&infoLevel,
@@ -177,7 +138,7 @@ func Debug(msg string) {
 		outputStream,
 	)
 
-	if writersCount > 0 {
+	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
 			&debugLevel,
@@ -203,7 +164,7 @@ func Warn(msg string) {
 		outputStream,
 	)
 
-	if writersCount > 0 {
+	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
 			&warnLevel,
@@ -227,7 +188,7 @@ func Error(desc string, err error) {
 		outputStream,
 	)
 
-	if writersCount > 0 {
+	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
 			&errorLevel,
@@ -252,7 +213,7 @@ func Fatal(desc string, err error) {
 		outputStream,
 	)
 
-	if writersCount > 0 {
+	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
 			&fatalLevel,
@@ -279,7 +240,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 		outputStream,
 	)
 
-	if writersCount > 0 {
+	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
 			&fatalLevel,
@@ -306,7 +267,7 @@ func Panic(desc string, err error) {
 		outputStream,
 	)
 
-	if writersCount > 0 {
+	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
 			&panicLevel,
@@ -347,17 +308,12 @@ func writeToWriters(
 	message *string,
 ) {
 	var (
-		i      uint8  = 0
 		writer Writer = nil
 		err    error  = nil
 	)
 
-	for ; i < writersLength; i++ {
-		writer = writers[i]
-
-		if writer == nil {
-			continue
-		}
+	for e := writers.Front(); e != nil; e = e.Next() {
+		writer = e.Value.(Writer)
 
 		// write current log by the log writer
 		err = writer.WriteLog(
