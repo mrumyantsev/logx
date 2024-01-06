@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/mrumyantsev/multilog"
-	"github.com/mrumyantsev/multilog/defaults"
 	"github.com/mrumyantsev/multilog/log"
 )
 
@@ -68,7 +67,7 @@ func (f *FileController) WriteLog(datetime time.Time, levelId uint8, message str
 	}
 
 	fmt.Println(fmt.Sprintf(
-		_WRITER_ACCEPTING_EXAMPLE, f.Destination, datetime.Format(defaults.TimeFormat), defaults.GetLevelText(levelId), message))
+		_WRITER_ACCEPTING_EXAMPLE, f.Destination, datetime.Format(multilog.TimeFormat), multilog.GetLevelText(levelId), message))
 
 	return nil
 }
@@ -85,7 +84,7 @@ type DatabaseController struct {
 
 func (d *DatabaseController) WriteLog(datetime time.Time, levelId uint8, message string) error {
 	fmt.Println(fmt.Sprintf(
-		_WRITER_ACCEPTING_EXAMPLE, d.Destination, datetime.Format(defaults.TimeFormat), defaults.GetLevelText(levelId), message))
+		_WRITER_ACCEPTING_EXAMPLE, d.Destination, datetime.Format(multilog.TimeFormat), multilog.GetLevelText(levelId), message))
 
 	return nil
 }

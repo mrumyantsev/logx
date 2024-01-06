@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/mrumyantsev/multilog"
-	"github.com/mrumyantsev/multilog/defaults"
 )
 
 const (
@@ -24,26 +23,26 @@ var (
 	isDisableWarnLogs  bool = false
 
 	// level text for the stream logs
-	infoLevel  string = defaults.InfoLevel
-	debugLevel string = defaults.DebugLevel
-	warnLevel  string = defaults.WarnLevel
-	errorLevel string = defaults.ErrorLevel
-	fatalLevel string = defaults.FatalLevel
-	panicLevel string = defaults.PanicLevel
+	infoLevel  string = multilog.InfoLevel
+	debugLevel string = multilog.DebugLevel
+	warnLevel  string = multilog.WarnLevel
+	errorLevel string = multilog.ErrorLevel
+	fatalLevel string = multilog.FatalLevel
+	panicLevel string = multilog.PanicLevel
 
 	// colors of level text for the stream logs
-	regularColor string = defaults.RegularColor
-	grayColor    string = defaults.GrayColor
-	greenColor   string = defaults.GreenColor
-	yellowColor  string = defaults.YellowColor
-	redColor     string = defaults.RedColor
-	boldRedColor string = defaults.BoldRedColor
+	regularColor string = multilog.RegularColor
+	grayColor    string = multilog.GrayColor
+	greenColor   string = multilog.GreenColor
+	yellowColor  string = multilog.YellowColor
+	redColor     string = multilog.RedColor
+	boldRedColor string = multilog.BoldRedColor
 
 	// datetime patten for the stream logs
-	timeFormat string = defaults.TimeFormat
+	timeFormat string = multilog.TimeFormat
 
 	// data stream pointer for the stream logs
-	outputStream *os.File = defaults.GetOutputStream()
+	outputStream *os.File = multilog.GetOutputStream()
 
 	// log writer interface objects
 	writers *list.List = list.New()
@@ -57,19 +56,19 @@ func ApplyConfig(cfg *multilog.Config) {
 	isDisableWarnLogs = cfg.IsDisableWarnLogs
 
 	if cfg.IsDisableColors {
-		regularColor = defaults.EmptyString
-		grayColor = defaults.EmptyString
-		greenColor = defaults.EmptyString
-		yellowColor = defaults.EmptyString
-		redColor = defaults.EmptyString
-		boldRedColor = defaults.EmptyString
+		regularColor = multilog.EmptyString
+		grayColor = multilog.EmptyString
+		greenColor = multilog.EmptyString
+		yellowColor = multilog.EmptyString
+		redColor = multilog.EmptyString
+		boldRedColor = multilog.EmptyString
 	} else {
-		regularColor = defaults.RegularColor
-		grayColor = defaults.GrayColor
-		greenColor = defaults.GreenColor
-		yellowColor = defaults.YellowColor
-		redColor = defaults.RedColor
-		boldRedColor = defaults.BoldRedColor
+		regularColor = multilog.RegularColor
+		grayColor = multilog.GrayColor
+		greenColor = multilog.GreenColor
+		yellowColor = multilog.YellowColor
+		redColor = multilog.RedColor
+		boldRedColor = multilog.BoldRedColor
 	}
 
 	timeFormat = cfg.TimeFormat
@@ -115,7 +114,7 @@ func Info(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			defaults.InfoLevelId,
+			multilog.InfoLevelId,
 			&msg,
 		)
 	}
@@ -141,7 +140,7 @@ func Debug(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			defaults.DebugLevelId,
+			multilog.DebugLevelId,
 			&msg,
 		)
 	}
@@ -167,7 +166,7 @@ func Warn(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			defaults.WarnLevelId,
+			multilog.WarnLevelId,
 			&msg,
 		)
 	}
@@ -191,7 +190,7 @@ func Error(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			defaults.ErrorLevelId,
+			multilog.ErrorLevelId,
 			&desc,
 		)
 	}
@@ -216,7 +215,7 @@ func Fatal(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			defaults.FatalLevelId,
+			multilog.FatalLevelId,
 			&desc,
 		)
 	}
@@ -243,7 +242,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			defaults.FatalLevelId,
+			multilog.FatalLevelId,
 			&desc,
 		)
 	}
@@ -270,7 +269,7 @@ func Panic(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			defaults.PanicLevelId,
+			multilog.PanicLevelId,
 			&desc,
 		)
 	}
@@ -290,13 +289,13 @@ func writeToStream(
 		[]byte(
 			grayColor +
 				(*datetime).Format(timeFormat) +
-				defaults.Space +
+				multilog.Space +
 				*levelColor +
 				*level +
-				defaults.Space +
+				multilog.Space +
 				regularColor +
 				*message +
-				defaults.EndOfLine,
+				multilog.EndOfLine,
 		),
 	)
 }
