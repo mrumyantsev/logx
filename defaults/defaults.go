@@ -28,9 +28,30 @@ const (
 	TimeFormat string = "2006-01-02T15:04:05-07:00"
 )
 
+const (
+	InfoLevelId uint8 = iota
+	DebugLevelId
+	WarnLevelId
+	ErrorLevelId
+	FatalLevelId
+	PanicLevelId
+)
+
 var (
+	levelTexts = [6]string{
+		"INF",
+		"DBG",
+		"WRN",
+		"ERR",
+		"FTL",
+		"PNC",
+	}
 	outputStream = os.Stderr
 )
+
+func GetLevelText(levelId uint8) string {
+	return levelTexts[levelId]
+}
 
 // Get output stream settings, filled with default values.
 func GetOutputStream() *os.File {

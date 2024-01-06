@@ -4,7 +4,7 @@ This logging library can write logs mainly to a console and secondly to the spec
 
 ``` Go
 type Writer interface {
-	WriteLog(datetime time.Time, level string, message string) error
+	WriteLog(datetime time.Time, levelId uint8, message string) error
 }
 ```
 

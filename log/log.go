@@ -78,10 +78,10 @@ func ApplyConfig(cfg *multilog.Config) {
 
 // Log writer interface. Any implemented objects are assumed to be
 // supplemental log writers to the logger. Implement this interface
-// with your custom writer and add it to logger by calling the
-// AddWriter() method, and the logger will send logs to it.
+// with your custom writer and add it to the logger by calling the
+// AddWriter() method, and the logger will send logs through it.
 type Writer interface {
-	WriteLog(datetime time.Time, level string, message string) error
+	WriteLog(datetime time.Time, levelId uint8, message string) error
 }
 
 // Add log writer, so the logger can call it to do logs with it.
@@ -115,7 +115,7 @@ func Info(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			&infoLevel,
+			defaults.InfoLevelId,
 			&msg,
 		)
 	}
@@ -141,7 +141,7 @@ func Debug(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			&debugLevel,
+			defaults.DebugLevelId,
 			&msg,
 		)
 	}
@@ -167,7 +167,7 @@ func Warn(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			&warnLevel,
+			defaults.WarnLevelId,
 			&msg,
 		)
 	}
@@ -191,7 +191,7 @@ func Error(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			&errorLevel,
+			defaults.ErrorLevelId,
 			&desc,
 		)
 	}
@@ -216,7 +216,7 @@ func Fatal(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			&fatalLevel,
+			defaults.FatalLevelId,
 			&desc,
 		)
 	}
@@ -243,7 +243,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			&fatalLevel,
+			defaults.FatalLevelId,
 			&desc,
 		)
 	}
@@ -270,7 +270,7 @@ func Panic(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			&panicLevel,
+			defaults.PanicLevelId,
 			&desc,
 		)
 	}
@@ -304,7 +304,7 @@ func writeToStream(
 // Write the logs by the log writers, that been added to the logger.
 func writeToWriters(
 	datetime *time.Time,
-	level *string,
+	levelId uint8,
 	message *string,
 ) {
 	var (
@@ -318,7 +318,7 @@ func writeToWriters(
 		// write current log by the log writer
 		err = writer.WriteLog(
 			*datetime,
-			*level,
+			levelId,
 			*message,
 		)
 		if err != nil {

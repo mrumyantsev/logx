@@ -62,13 +62,13 @@ type FileController struct {
 	err         error
 }
 
-func (f *FileController) WriteLog(datetime time.Time, level string, message string) error {
+func (f *FileController) WriteLog(datetime time.Time, levelId uint8, message string) error {
 	if f.err != nil {
 		return f.err
 	}
 
 	fmt.Println(fmt.Sprintf(
-		_WRITER_ACCEPTING_EXAMPLE, f.Destination, datetime.Format(defaults.TimeFormat), level, message))
+		_WRITER_ACCEPTING_EXAMPLE, f.Destination, datetime.Format(defaults.TimeFormat), defaults.GetLevelText(levelId), message))
 
 	return nil
 }
@@ -83,9 +83,9 @@ type DatabaseController struct {
 	Destination string
 }
 
-func (d *DatabaseController) WriteLog(datetime time.Time, level string, message string) error {
+func (d *DatabaseController) WriteLog(datetime time.Time, levelId uint8, message string) error {
 	fmt.Println(fmt.Sprintf(
-		_WRITER_ACCEPTING_EXAMPLE, d.Destination, datetime.Format(defaults.TimeFormat), level, message))
+		_WRITER_ACCEPTING_EXAMPLE, d.Destination, datetime.Format(defaults.TimeFormat), defaults.GetLevelText(levelId), message))
 
 	return nil
 }
