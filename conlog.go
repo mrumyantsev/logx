@@ -6,33 +6,31 @@ import (
 )
 
 type ConLog struct {
-	outputStream    *os.File
 	isDisableColors bool
 	timeFormat      string
+	outputStream    *os.File
 }
 
 func NewConLog() *ConLog {
 	conLog := &ConLog{}
 
-	conLog.outputStream = GetOutputStream()
-
 	conLog.isDisableColors = false
-
-	conLog.timeFormat = "2006-01-02T15:04:05-07:00"
+	conLog.timeFormat = TimeFormat
+	conLog.outputStream = GetOutputStream()
 
 	return conLog
 }
 
-func (c *ConLog) SetOutputStream(outputStream *os.File) {
-	c.outputStream = outputStream
-}
-
-func (c *ConLog) SetIsDisableColors(isDisableColors bool) {
+func (c *ConLog) SetDisableColors(isDisableColors bool) {
 	c.isDisableColors = isDisableColors
 }
 
 func (c *ConLog) SetTimeFormat(timeFormat string) {
 	c.timeFormat = timeFormat
+}
+
+func (c *ConLog) SetOutputStream(outputStream *os.File) {
+	c.outputStream = outputStream
 }
 
 func (c *ConLog) WriteLog(datetime time.Time, levelId uint8, message string) error {

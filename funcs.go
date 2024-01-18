@@ -48,7 +48,7 @@ func ApplyConfig(cfg *Config) {
 		return
 	}
 
-	conlog.SetIsDisableColors(cfg.IsDisableColors)
+	conlog.SetDisableColors(cfg.IsDisableColors)
 	conlog.SetTimeFormat(cfg.TimeFormat)
 	conlog.SetOutputStream(cfg.OutputStream)
 }
