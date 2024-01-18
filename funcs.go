@@ -1,13 +1,10 @@
-package log
+package multilog
 
 import (
 	"container/list"
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/mrumyantsev/multilog"
-	"github.com/mrumyantsev/multilog/default-writer/conlog"
 )
 
 const (
@@ -30,7 +27,7 @@ var (
 func initListWithDefaultWriter() *list.List {
 	list := list.New()
 
-	conLog := conlog.New()
+	conLog := NewConLog()
 
 	list.PushFront(conLog)
 
@@ -38,7 +35,7 @@ func initListWithDefaultWriter() *list.List {
 }
 
 // Apply new configuration to the logger.
-func ApplyConfig(cfg *multilog.Config) {
+func ApplyConfig(cfg *Config) {
 	cfg.InitEmptyFields()
 
 	isDisableDebugLogs = cfg.IsDisableDebugLogs
@@ -76,7 +73,7 @@ func Info(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			multilog.InfoLevelId,
+			InfoLevelId,
 			&msg,
 		)
 	}
@@ -94,7 +91,7 @@ func Debug(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			multilog.DebugLevelId,
+			DebugLevelId,
 			&msg,
 		)
 	}
@@ -112,7 +109,7 @@ func Warn(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			multilog.WarnLevelId,
+			WarnLevelId,
 			&msg,
 		)
 	}
@@ -128,7 +125,7 @@ func Error(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			multilog.ErrorLevelId,
+			ErrorLevelId,
 			&desc,
 		)
 	}
@@ -145,7 +142,7 @@ func Fatal(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			multilog.FatalLevelId,
+			FatalLevelId,
 			&desc,
 		)
 	}
@@ -164,7 +161,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			multilog.FatalLevelId,
+			FatalLevelId,
 			&desc,
 		)
 	}
@@ -183,7 +180,7 @@ func Panic(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			multilog.PanicLevelId,
+			PanicLevelId,
 			&desc,
 		)
 	}
@@ -218,17 +215,17 @@ func writeToWriters(
 				desc string = fmt.Sprintf(
 					"could not write to log writer=%T", writer) +
 					errorInsert + err.Error()
-				stream *os.File = multilog.GetOutputStream()
+				stream *os.File = GetOutputStream()
 			)
 
 			stream.Write(
 				[]byte(
-					datetime.Format(multilog.TimeFormat) +
-						multilog.Space +
-						multilog.GetLevelText(levelId) +
-						multilog.Space +
+					datetime.Format(TimeFormat) +
+						Space +
+						GetLevelText(levelId) +
+						Space +
 						desc +
-						multilog.EndOfLine,
+						EndOfLine,
 				),
 			)
 		}

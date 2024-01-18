@@ -1,10 +1,8 @@
-package conlog
+package multilog
 
 import (
 	"os"
 	"time"
-
-	"github.com/mrumyantsev/multilog"
 )
 
 type ConLog struct {
@@ -13,10 +11,10 @@ type ConLog struct {
 	timeFormat      string
 }
 
-func New() *ConLog {
+func NewConLog() *ConLog {
 	conLog := &ConLog{}
 
-	conLog.outputStream = multilog.GetOutputStream()
+	conLog.outputStream = GetOutputStream()
 
 	conLog.isDisableColors = false
 
@@ -32,11 +30,11 @@ func (c *ConLog) WriteLog(datetime time.Time, levelId uint8, message string) err
 		_, err = c.outputStream.Write(
 			[]byte(
 				datetime.Format(c.timeFormat) +
-					multilog.Space +
-					multilog.GetLevelText(levelId) +
-					multilog.Space +
+					Space +
+					GetLevelText(levelId) +
+					Space +
 					message +
-					multilog.EndOfLine,
+					EndOfLine,
 			),
 		)
 
@@ -45,15 +43,15 @@ func (c *ConLog) WriteLog(datetime time.Time, levelId uint8, message string) err
 
 	_, err = c.outputStream.Write(
 		[]byte(
-			multilog.GrayColor +
+			GrayColor +
 				datetime.Format(c.timeFormat) +
-				multilog.Space +
-				multilog.GetLevelColor(levelId) +
-				multilog.GetLevelText(levelId) +
-				multilog.Space +
-				multilog.RegularColor +
+				Space +
+				GetLevelColor(levelId) +
+				GetLevelText(levelId) +
+				Space +
+				RegularColor +
 				message +
-				multilog.EndOfLine,
+				EndOfLine,
 		),
 	)
 
