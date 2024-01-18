@@ -18,7 +18,6 @@ const (
 
 	RegularColor string = ColorPrefix + "0m"
 	GrayColor    string = ColorPrefix + "90m"
-
 	GreenColor   string = ColorPrefix + "32m"
 	YellowColor  string = ColorPrefix + "33m"
 	RedColor     string = ColorPrefix + "31m"
@@ -37,8 +36,9 @@ const (
 )
 
 var (
-	outputStream = os.Stderr
-	levelTexts   = [6]string{
+	outputStream *os.File = os.Stderr
+
+	levelTexts = [6]string{
 		"INF",
 		"DBG",
 		"WRN",
@@ -46,6 +46,7 @@ var (
 		"FTL",
 		"PNC",
 	}
+
 	levelColors = [6]string{
 		GreenColor,
 		YellowColor,
@@ -65,6 +66,6 @@ func GetLevelText(levelId uint8) string {
 	return levelTexts[levelId]
 }
 
-func GetLevelColor(colorId uint8) string {
-	return levelColors[colorId]
+func GetLevelColor(levelId uint8) string {
+	return levelColors[levelId]
 }
