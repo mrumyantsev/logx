@@ -14,6 +14,10 @@ type Config struct {
 	// Default: false
 	IsDisableWarnLogs bool
 
+	// Disables default console logger.
+	// Default: false
+	IsDisableDefaultConsoleLogger bool
+
 	// Disables colored text in the stream logs.
 	// Default: false
 	IsDisableColors bool

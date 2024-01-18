@@ -43,16 +43,28 @@ func ApplyConfig(cfg *Config) {
 	isDisableDebugLogs = cfg.IsDisableDebugLogs
 	isDisableWarnLogs = cfg.IsDisableWarnLogs
 
-	// next, apply new configuration to ConLog
+	// Next: apply the parameters for the default console logger
+	// (ConLog).
 
+	// check, if head element of writers list is exists,
+	// and check it for ConLog instance
 	headWriter := writers.Front()
-	conLog, ok := headWriter.Value.(*ConLog)
+	if headWriter == nil {
+		return
+	}
 
-	// exit, if ConLog is not presents
+	conLog, ok := headWriter.Value.(*ConLog)
 	if !ok {
 		return
 	}
 
+	// remove ConLog and exit, if the config parameter is set true
+	if cfg.IsDisableDefaultConsoleLogger {
+		writers.Remove(headWriter)
+		return
+	}
+
+	// apply new configuration to ConLog
 	conLog.SetDisableColors(cfg.IsDisableColors)
 	conLog.SetTimeFormat(cfg.TimeFormat)
 	conLog.SetOutputStream(cfg.OutputStream)
