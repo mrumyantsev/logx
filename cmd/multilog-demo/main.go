@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	log "github.com/mrumyantsev/multilog"
@@ -14,7 +15,9 @@ const (
 
 func main() {
 	logCfg := &log.Config{
-		TimeFormat: time.RFC3339Nano,
+		TimeFormat:      time.Kitchen,
+		IsDisableColors: false,
+		OutputStream:    os.Stdout,
 	}
 
 	log.ApplyConfig(logCfg)
