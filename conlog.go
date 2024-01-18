@@ -23,6 +23,18 @@ func NewConLog() *ConLog {
 	return conLog
 }
 
+func (c *ConLog) SetOutputStream(outputStream *os.File) {
+	c.outputStream = outputStream
+}
+
+func (c *ConLog) SetIsDisableColors(isDisableColors bool) {
+	c.isDisableColors = isDisableColors
+}
+
+func (c *ConLog) SetTimeFormat(timeFormat string) {
+	c.timeFormat = timeFormat
+}
+
 func (c *ConLog) WriteLog(datetime time.Time, levelId uint8, message string) error {
 	var err error
 

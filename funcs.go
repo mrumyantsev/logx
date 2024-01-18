@@ -40,6 +40,17 @@ func ApplyConfig(cfg *Config) {
 
 	isDisableDebugLogs = cfg.IsDisableDebugLogs
 	isDisableWarnLogs = cfg.IsDisableWarnLogs
+
+	headWriter := writers.Front()
+	conlog, ok := headWriter.Value.(*ConLog)
+
+	if !ok {
+		return
+	}
+
+	conlog.SetIsDisableColors(cfg.IsDisableColors)
+	conlog.SetTimeFormat(cfg.TimeFormat)
+	conlog.SetOutputStream(cfg.OutputStream)
 }
 
 // Log writer interface. Any implemented objects are assumed to be
