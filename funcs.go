@@ -21,10 +21,12 @@ var (
 	isDisableWarnLogs  bool = false
 
 	// log writer interface objects
-	writers *list.List = initListWithDefaultWriter()
+	writers *list.List = initWriters()
 )
 
-func initListWithDefaultWriter() *list.List {
+// initWriters returns list of writers with the only element in it -
+// pointer to ConLog instance.
+func initWriters() *list.List {
 	list := list.New()
 
 	conLog := NewConLog()
@@ -41,16 +43,19 @@ func ApplyConfig(cfg *Config) {
 	isDisableDebugLogs = cfg.IsDisableDebugLogs
 	isDisableWarnLogs = cfg.IsDisableWarnLogs
 
-	headWriter := writers.Front()
-	conlog, ok := headWriter.Value.(*ConLog)
+	// next, apply new configuration to ConLog
 
+	headWriter := writers.Front()
+	conLog, ok := headWriter.Value.(*ConLog)
+
+	// exit, if ConLog is not presents
 	if !ok {
 		return
 	}
 
-	conlog.SetDisableColors(cfg.IsDisableColors)
-	conlog.SetTimeFormat(cfg.TimeFormat)
-	conlog.SetOutputStream(cfg.OutputStream)
+	conLog.SetDisableColors(cfg.IsDisableColors)
+	conLog.SetTimeFormat(cfg.TimeFormat)
+	conLog.SetOutputStream(cfg.OutputStream)
 }
 
 // Log writer interface. Any implemented objects are assumed to be
