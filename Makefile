@@ -1,3 +1,5 @@
-.PHONY: run/demo
-run/demo:
-	@go run ./cmd/logx-demo/main.go
+.SILENT:
+
+.PHONY: demo
+demo:
+	go run ./cmd/logx-demo
