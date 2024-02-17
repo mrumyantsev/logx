@@ -1,16 +1,23 @@
-# LogX Go Library
+# Библиотека LogX
 
-This logging library can write logs mainly to a console and secondly to the specific places: databases, files, etc. But the logger does not have the implementations for any of this kind log objects. Therefore, it's up to programmer to create any needed for him *log writers* endpoints. Every log writer should implement **Writer** interface from `logx/log` package:
+Данная библиотека логирования может записывать логи:
 
-``` Go
+- в поток данных, через свой собственный стандартный логгер.
+- в специфические места, такие как: базы данных, лог-файлы и т. д.
+
+Для того, чтобы писать такие логи, нужно реализовать интерфейс `log.Writer` с одним единственным методом: `WriteLog`.
+
+# Интерфейс для реализации писателя логов
+
+``` Golang
 type Writer interface {
 	WriteLog(datetime time.Time, levelId uint8, message string) error
 }
 ```
 
-# Demonstration
+# Демонстрация
 
-Use the command below to see a console demo.
+Выполните следующую команду в терминале, чтобы увидеть демонстрацию работы логгера:
 
 ```
 make run/demo
