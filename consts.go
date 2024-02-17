@@ -1,4 +1,4 @@
-package multilog
+package logx
 
 import "os"
 

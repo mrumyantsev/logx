@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	log "github.com/mrumyantsev/multilog"
+	log "github.com/mrumyantsev/logx"
 )
 
 const (

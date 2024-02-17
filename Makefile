@@ -1,3 +1,3 @@
 .PHONY: run/demo
 run/demo:
-	@go run ./cmd/multilog-demo/main.go
+	@go run ./cmd/logx-demo/main.go
