@@ -1,10 +1,13 @@
-package logx
+package log
 
 import (
 	"container/list"
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/mrumyantsev/logx"
+	"github.com/mrumyantsev/logx/logger"
 )
 
 const (
@@ -24,50 +27,48 @@ var (
 	writers *list.List = initWriters()
 )
 
-// initWriters returns list of writers with the only element in it -
-// pointer to ConLog instance.
+// initWriters returns list of writers with standard logger in it.
 func initWriters() *list.List {
 	list := list.New()
 
-	conLog := NewConLog()
+	stdLogger := logger.New()
 
-	list.PushFront(conLog)
+	list.PushFront(stdLogger)
 
 	return list
 }
 
 // Apply new configuration to the logger.
-func ApplyConfig(cfg *Config) {
+func ApplyConfig(cfg *logx.Config) {
 	cfg.InitEmptyFields()
 
 	isDisableDebugLogs = cfg.IsDisableDebugLogs
 	isDisableWarnLogs = cfg.IsDisableWarnLogs
 
-	// Next: apply the parameters for the default console logger
-	// (ConLog).
+	// Next: apply parameters for standard logger
 
-	// check, if head element of writers list is exists,
-	// and check it for ConLog instance
+	// get head element (if not nil)
 	headWriter := writers.Front()
 	if headWriter == nil {
 		return
 	}
 
-	conLog, ok := headWriter.Value.(*ConLog)
+	// cast to standard logger
+	logger, ok := headWriter.Value.(*logger.Logger)
 	if !ok {
 		return
 	}
 
-	// remove ConLog and exit, if the config parameter is set true
+	// remove standard logger and exit (if config flag is set)
 	if cfg.IsDisableDefaultConsoleLogger {
 		writers.Remove(headWriter)
 		return
 	}
 
-	// apply new configuration to ConLog
-	conLog.SetDisableColors(cfg.IsDisableColors)
-	conLog.SetTimeFormat(cfg.TimeFormat)
-	conLog.SetOutputStream(cfg.OutputStream)
+	// apply new configuration to standard logger
+	logger.SetDisableColors(cfg.IsDisableColors)
+	logger.SetTimeFormat(cfg.TimeFormat)
+	logger.SetOutputStream(cfg.OutputStream)
 }
 
 // Log writer interface. Any implemented objects are assumed to be
@@ -101,7 +102,7 @@ func Info(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			InfoLevelId,
+			logx.InfoLevelId,
 			&msg,
 		)
 	}
@@ -119,7 +120,7 @@ func Debug(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			DebugLevelId,
+			logx.DebugLevelId,
 			&msg,
 		)
 	}
@@ -137,7 +138,7 @@ func Warn(msg string) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			WarnLevelId,
+			logx.WarnLevelId,
 			&msg,
 		)
 	}
@@ -153,7 +154,7 @@ func Error(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			ErrorLevelId,
+			logx.ErrorLevelId,
 			&desc,
 		)
 	}
@@ -170,7 +171,7 @@ func Fatal(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			FatalLevelId,
+			logx.FatalLevelId,
 			&desc,
 		)
 	}
@@ -189,7 +190,7 @@ func FatalWithCode(desc string, err error, exitCode int) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			FatalLevelId,
+			logx.FatalLevelId,
 			&desc,
 		)
 	}
@@ -208,7 +209,7 @@ func Panic(desc string, err error) {
 	if writers.Len() > 0 {
 		writeToWriters(
 			&datetime,
-			PanicLevelId,
+			logx.PanicLevelId,
 			&desc,
 		)
 	}
@@ -243,17 +244,17 @@ func writeToWriters(
 				desc string = fmt.Sprintf(
 					"could not write to log writer=%T", writer) +
 					errorInsert + err.Error()
-				stream *os.File = GetOutputStream()
+				stream *os.File = logx.GetOutputStream()
 			)
 
 			stream.Write(
 				[]byte(
-					datetime.Format(TimeFormat) +
-						Space +
-						GetLevelText(levelId) +
-						Space +
+					datetime.Format(logx.TimeFormat) +
+						logx.Space +
+						logx.GetLevelText(levelId) +
+						logx.Space +
 						desc +
-						EndOfLine,
+						logx.EndOfLine,
 				),
 			)
 		}
