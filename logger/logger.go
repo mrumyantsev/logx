@@ -7,42 +7,53 @@ import (
 	"github.com/mrumyantsev/logx"
 )
 
+// Standard LogX logger. Implements logx.LogWriter interface and writes
+// logs to data stream file (stderr by default).
 type Logger struct {
 	isDisableColors bool
 	timeFormat      string
-	outputStream    *os.File
+	output          *os.File
 }
 
 func New() *Logger {
 	return &Logger{
-		timeFormat:   logx.TimeFormat,
-		outputStream: logx.GetOutputStream(),
+		timeFormat: logx.TimeFormat,
+		output:     logx.Output(),
 	}
-}
-
-func (l *Logger) SetDisableColors(isDisableColors bool) {
-	l.isDisableColors = isDisableColors
 }
 
 func (l *Logger) SetTimeFormat(timeFormat string) {
 	l.timeFormat = timeFormat
 }
 
-func (l *Logger) SetOutputStream(outputStream *os.File) {
-	l.outputStream = outputStream
+func (l *Logger) Output() *os.File {
+	return l.output
 }
 
-func (l *Logger) WriteLog(datetime time.Time, levelId uint8, message string) error {
+func (l *Logger) SetOutput(f *os.File) {
+	l.output = f
+}
+
+func (l *Logger) EnableColors() {
+	l.isDisableColors = false
+}
+
+func (l *Logger) DisableColors() {
+	l.isDisableColors = true
+}
+
+// WriteLog writes the log message to output data stream.
+func (l *Logger) WriteLog(time time.Time, level logx.LogLevel, msg string) error {
 	var err error
 
 	if l.isDisableColors {
-		_, err = l.outputStream.Write(
+		_, err = l.output.Write(
 			[]byte(
-				datetime.Format(l.timeFormat) +
+				time.Format(l.timeFormat) +
 					logx.Space +
-					logx.GetLevelText(levelId) +
+					logx.LevelText(level) +
 					logx.Space +
-					message +
+					msg +
 					logx.EndOfLine,
 			),
 		)
@@ -50,16 +61,16 @@ func (l *Logger) WriteLog(datetime time.Time, levelId uint8, message string) err
 		return err
 	}
 
-	_, err = l.outputStream.Write(
+	_, err = l.output.Write(
 		[]byte(
 			logx.GrayColor +
-				datetime.Format(l.timeFormat) +
+				time.Format(l.timeFormat) +
 				logx.Space +
-				logx.GetLevelColor(levelId) +
-				logx.GetLevelText(levelId) +
+				logx.LevelColor(level) +
+				logx.LevelText(level) +
 				logx.Space +
 				logx.RegularColor +
-				message +
+				msg +
 				logx.EndOfLine,
 		),
 	)

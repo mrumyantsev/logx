@@ -2,52 +2,56 @@ package logx
 
 import "os"
 
-// Constants, that defines the presentation of logs.
+// Constants, used in LogX.
 const (
-	EmptyString string = ""
-	Space       string = " "
-	EndOfLine   string = "\n"
-	ColorPrefix string = string(27) + "["
+	EmptyString = ""
+	Space       = " "
+	EndOfLine   = "\n"
+	ColorPrefix = string(27) + "["
 
-	InfoLevel  string = "INF"
-	DebugLevel string = "DBG"
-	WarnLevel  string = "WRN"
-	ErrorLevel string = "ERR"
-	FatalLevel string = "FTL"
-	PanicLevel string = "PNC"
+	InfoLevelText  = "INF"
+	DebugLevelText = "DBG"
+	WarnLevelText  = "WRN"
+	ErrorLevelText = "ERR"
+	FatalLevelText = "FTL"
+	PanicLevelText = "PNC"
 
-	RegularColor string = ColorPrefix + "0m"
-	GrayColor    string = ColorPrefix + "90m"
-	GreenColor   string = ColorPrefix + "32m"
-	YellowColor  string = ColorPrefix + "33m"
-	RedColor     string = ColorPrefix + "31m"
-	BoldRedColor string = ColorPrefix + "1m" + RedColor
+	RegularColor = ColorPrefix + "0m"
+	GrayColor    = ColorPrefix + "90m"
+	GreenColor   = ColorPrefix + "32m"
+	YellowColor  = ColorPrefix + "33m"
+	RedColor     = ColorPrefix + "31m"
+	BoldRedColor = ColorPrefix + "1m" + RedColor
 
-	TimeFormat string = "2006-01-02T15:04:05-07:00"
+	TimeFormat = "2006-01-02 15:04:05 -0700"
+
+	FatalExitCode = 1
 )
 
+// LogLevel is a type, to indicate current log message level, and to
+// get level text and level color with its value.
+type LogLevel uint8
+
 const (
-	InfoLevelId uint8 = iota
-	DebugLevelId
-	WarnLevelId
-	ErrorLevelId
-	FatalLevelId
-	PanicLevelId
+	InfoLevel LogLevel = iota
+	DebugLevel
+	WarnLevel
+	ErrorLevel
+	FatalLevel
+	PanicLevel
 )
 
 var (
-	outputStream *os.File = os.Stderr
-
-	levelTexts = [6]string{
-		"INF",
-		"DBG",
-		"WRN",
-		"ERR",
-		"FTL",
-		"PNC",
+	levelTexts = [...]string{
+		InfoLevelText,
+		DebugLevelText,
+		WarnLevelText,
+		ErrorLevelText,
+		FatalLevelText,
+		PanicLevelText,
 	}
 
-	levelColors = [6]string{
+	levelColors = [...]string{
 		GreenColor,
 		YellowColor,
 		RedColor,
@@ -55,17 +59,22 @@ var (
 		BoldRedColor,
 		BoldRedColor,
 	}
+
+	output *os.File = os.Stderr
 )
 
-// Get output stream settings, filled with default values.
-func GetOutputStream() *os.File {
-	return outputStream
+// LevelText returns text, which indicates the level of log message.
+// Like "INF", "ERR", "FTL", etc.
+func LevelText(level LogLevel) string {
+	return levelTexts[level]
 }
 
-func GetLevelText(levelId uint8) string {
-	return levelTexts[levelId]
+// LevelColor returns text code to colorize text in UNIX-terminal.
+func LevelColor(level LogLevel) string {
+	return levelColors[level]
 }
 
-func GetLevelColor(levelId uint8) string {
-	return levelColors[levelId]
+// Output returns stderr OS file, as default logger's output.
+func Output() *os.File {
+	return output
 }

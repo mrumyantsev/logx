@@ -1,7 +1,6 @@
 package log
 
 import (
-	"container/list"
 	"fmt"
 	"os"
 	"time"
@@ -11,252 +10,253 @@ import (
 )
 
 const (
-	// insert between the error and
-	// its description. Used in error,
-	// fatal and panic level logging
-	// functions
-	errorInsert string = ". error: "
+	// insert between error description and error message
+	errorInsert = ": "
 )
 
 var (
-	// flags to disable logs execution
-	isDisableDebugLogs bool = false
-	isDisableWarnLogs  bool = false
+	// flags to disable writing of logs
+	isDisableDebugLogs = false
+	isDisableWarnLogs  = false
 
-	// log writer interface objects
-	writers *list.List = initWriters()
+	// standard logger
+	std = logger.New()
+
+	// log writers linked list storage
+	headWriter *writerElement
 )
 
-// initWriters returns list of writers with standard logger in it.
-func initWriters() *list.List {
-	list := list.New()
-
-	stdLogger := logger.New()
-
-	list.PushFront(stdLogger)
-
-	return list
-}
-
-// Apply new configuration to the logger.
+// ApplyConfig applies new configuration to LogX.
 func ApplyConfig(cfg *logx.Config) {
 	cfg.InitEmptyFields()
 
 	isDisableDebugLogs = cfg.IsDisableDebugLogs
 	isDisableWarnLogs = cfg.IsDisableWarnLogs
 
-	// Next: apply parameters for standard logger
+	// the next statements are for standard logger
 
-	// get head element (if not nil)
-	headWriter := writers.Front()
+	if cfg.IsDisableStandardLogger {
+		std = nil
+
+		return
+	}
+
+	if std == nil {
+		std = logger.New()
+	}
+
+	if cfg.IsDisableColors {
+		std.DisableColors()
+	} else {
+		std.EnableColors()
+	}
+
+	std.SetTimeFormat(cfg.TimeFormat)
+	std.SetOutput(cfg.Output)
+}
+
+// AddWriters adds log writers to LogX.
+func AddWriters(w ...logx.LogWriter) {
+	for _, writer := range w {
+		addWriter(writer)
+	}
+}
+
+// RemoveWriters removes log writers from LogX.
+func RemoveWriters(w ...logx.LogWriter) {
 	if headWriter == nil {
 		return
 	}
 
-	// cast to standard logger
-	logger, ok := headWriter.Value.(*logger.Logger)
-	if !ok {
-		return
-	}
-
-	// remove standard logger and exit (if config flag is set)
-	if cfg.IsDisableDefaultConsoleLogger {
-		writers.Remove(headWriter)
-		return
-	}
-
-	// apply new configuration to standard logger
-	logger.SetDisableColors(cfg.IsDisableColors)
-	logger.SetTimeFormat(cfg.TimeFormat)
-	logger.SetOutputStream(cfg.OutputStream)
-}
-
-// Log writer interface. Any implemented objects are assumed to be
-// supplemental log writers to the logger. Implement this interface
-// with your custom writer and add it to the logger by calling the
-// AddWriter() method, and the logger will send logs through it.
-type Writer interface {
-	WriteLog(datetime time.Time, levelId uint8, message string) error
-}
-
-// Add log writer, so the logger can call it to do logs with it.
-func AddWriter(w Writer) {
-	writers.PushBack(w)
-}
-
-// Remove log writer, so the logger can not call it any more to do logs.
-func RemoveWriter(w Writer) {
-	for e := writers.Front(); e != nil; e = e.Next() {
-		if e.Value.(Writer) == w {
-			writers.Remove(e)
-			return
-		}
+	for _, writer := range w {
+		removeWriter(writer)
 	}
 }
 
-// Write the info level log to stream, then write it by all of the log
-// writers (if they were added).
+// Info writes info level log by standard LogX logger, then writes it
+// by log writers, if they were added.
 func Info(msg string) {
-	var datetime time.Time = time.Now()
+	time := time.Now()
 
-	if writers.Len() > 0 {
-		writeToWriters(
-			&datetime,
-			logx.InfoLevelId,
-			&msg,
-		)
+	if std != nil {
+		std.WriteLog(time, logx.InfoLevel, msg)
+	}
+
+	if headWriter != nil {
+		writeByWriters(time, logx.InfoLevel, msg)
 	}
 }
 
-// Write the debug level log to stream, then write it by all of the log
-// writers (if they were added).
+// Debug writes debug level log by standard LogX logger, then writes it
+// by log writers, if they were added. Due to configuration the
+// function can be skipped.
 func Debug(msg string) {
 	if isDisableDebugLogs {
 		return
 	}
 
-	var datetime time.Time = time.Now()
+	time := time.Now()
 
-	if writers.Len() > 0 {
-		writeToWriters(
-			&datetime,
-			logx.DebugLevelId,
-			&msg,
-		)
+	if std != nil {
+		std.WriteLog(time, logx.DebugLevel, msg)
+	}
+
+	if headWriter != nil {
+		writeByWriters(time, logx.DebugLevel, msg)
 	}
 }
 
-// Write the warning level log to stream, then write it by all of the log
-// writers (if they were added).
+// Warn writes warn level log by standard LogX logger, then writes it
+// by log writers, if they were added. Due to configuration the
+// function can be skipped.
 func Warn(msg string) {
 	if isDisableWarnLogs {
 		return
 	}
 
-	var datetime time.Time = time.Now()
+	time := time.Now()
 
-	if writers.Len() > 0 {
-		writeToWriters(
-			&datetime,
-			logx.WarnLevelId,
-			&msg,
-		)
+	if std != nil {
+		std.WriteLog(time, logx.WarnLevel, msg)
+	}
+
+	if headWriter != nil {
+		writeByWriters(time, logx.WarnLevel, msg)
 	}
 }
 
-// Write the error level log to stream, then write it by all of the log
-// writers (if they were added).
+// Error writes error level log by standard LogX logger, then writes it
+// by log writers, if they were added.
 func Error(desc string, err error) {
-	var datetime time.Time = time.Now()
+	time := time.Now()
+	desc += errorInsert + err.Error()
 
-	desc = desc + errorInsert + err.Error()
+	if std != nil {
+		std.WriteLog(time, logx.ErrorLevel, desc)
+	}
 
-	if writers.Len() > 0 {
-		writeToWriters(
-			&datetime,
-			logx.ErrorLevelId,
-			&desc,
-		)
+	if headWriter != nil {
+		writeByWriters(time, logx.ErrorLevel, desc)
 	}
 }
 
-// Write the fatal level log to stream, then write it by all of the log
-// writers (if they were added). Then exit the program at the end with
-// the exit code 1.
+// Fatal writes fatal level log by standard LogX logger, then writes it
+// by log writers, if they were added, and ends the program with exit
+// code 1.
 func Fatal(desc string, err error) {
-	var datetime time.Time = time.Now()
+	time := time.Now()
+	desc += errorInsert + err.Error()
 
-	desc = desc + errorInsert + err.Error()
-
-	if writers.Len() > 0 {
-		writeToWriters(
-			&datetime,
-			logx.FatalLevelId,
-			&desc,
-		)
+	if std != nil {
+		std.WriteLog(time, logx.FatalLevel, desc)
 	}
 
-	os.Exit(1)
+	if headWriter != nil {
+		writeByWriters(time, logx.FatalLevel, desc)
+	}
+
+	os.Exit(logx.FatalExitCode)
 }
 
-// Write the fatal level log to stream, then write it by all of the log
-// writers (if they were added). Then exit the program at the end with
-// the exit code that set by the exitCode argument.
+// FatalWithCode writes fatal level log by standard LogX logger, then
+// writes it by log writers, if they were added, and ends the program
+// with specified exit code.
 func FatalWithCode(desc string, err error, exitCode int) {
-	var datetime time.Time = time.Now()
+	time := time.Now()
+	desc += errorInsert + err.Error()
 
-	desc = desc + errorInsert + err.Error()
+	if std != nil {
+		std.WriteLog(time, logx.FatalLevel, desc)
+	}
 
-	if writers.Len() > 0 {
-		writeToWriters(
-			&datetime,
-			logx.FatalLevelId,
-			&desc,
-		)
+	if headWriter != nil {
+		writeByWriters(time, logx.FatalLevel, desc)
 	}
 
 	os.Exit(exitCode)
 }
 
-// Write the panic level log to stream, then write it by all of the log
-// writers (if they were added). Then call a standard panic in the
+// Panic writes panic level log by standard LogX logger, then writes it
+// by log writers, if they were added, then calls the standard panic in
 // current goroutine.
 func Panic(desc string, err error) {
-	var datetime time.Time = time.Now()
+	time := time.Now()
+	desc += errorInsert + err.Error()
 
-	desc = desc + errorInsert + err.Error()
+	if std != nil {
+		std.WriteLog(time, logx.PanicLevel, desc)
+	}
 
-	if writers.Len() > 0 {
-		writeToWriters(
-			&datetime,
-			logx.PanicLevelId,
-			&desc,
-		)
+	if headWriter != nil {
+		writeByWriters(time, logx.PanicLevel, desc)
 	}
 
 	panic(desc)
 }
 
-// Write the logs by the log writers, that been added to the logger.
-func writeToWriters(
-	datetime *time.Time,
-	levelId uint8,
-	message *string,
-) {
-	var (
-		writer Writer = nil
-		err    error  = nil
-	)
+// addWriter adds a single element to log writers storage.
+func addWriter(w logx.LogWriter) {
+	headWriter = &writerElement{
+		writer: w,
+		next:   headWriter,
+	}
+}
 
-	for e := writers.Front(); e != nil; e = e.Next() {
-		writer = e.Value.(Writer)
+// removeWriter removes a single element from log writers storage.
+func removeWriter(w logx.LogWriter) {
+	var prev *writerElement
 
-		// write current log by the log writer
-		err = writer.WriteLog(
-			*datetime,
-			levelId,
-			*message,
-		)
-		if err != nil {
-			// write the error level log to the
-			// stream, if the error occurs
-			var (
-				desc string = fmt.Sprintf(
-					"could not write to log writer=%T", writer) +
-					errorInsert + err.Error()
-				stream *os.File = logx.GetOutputStream()
-			)
+	for el := headWriter; el != nil; el = el.next {
+		if el.writer == w {
+			if el == headWriter {
+				headWriter = headWriter.next
+			} else {
+				prev.next = el.next
+			}
 
-			stream.Write(
-				[]byte(
-					datetime.Format(logx.TimeFormat) +
-						logx.Space +
-						logx.GetLevelText(levelId) +
-						logx.Space +
-						desc +
-						logx.EndOfLine,
-				),
-			)
+			return
+		}
+
+		prev = el
+	}
+}
+
+// writeByWriters writes the log message by stored log writers.
+func writeByWriters(time time.Time, level logx.LogLevel, msg string) {
+	var err error
+
+	for el := headWriter; el != nil; el = el.next {
+		if err = el.writer.WriteLog(time, level, msg); err != nil {
+			desc := fmt.Sprintf(
+				"could not write to log writer=%T",
+				el.writer,
+			) + errorInsert + err.Error()
+
+			_ = writeToStream(time, logx.ErrorLevel, desc)
 		}
 	}
+}
+
+// writeToStream writes the log message to default output data stream.
+func writeToStream(time time.Time, level logx.LogLevel, msg string) error {
+	var err error
+
+	_, err = logx.Output().Write(
+		[]byte(
+			time.Format(logx.TimeFormat) +
+				logx.Space +
+				logx.LevelText(level) +
+				logx.Space +
+				msg +
+				logx.EndOfLine,
+		),
+	)
+
+	return err
+}
+
+// writerElement is an element of log writers linked list storage.
+type writerElement struct {
+	writer logx.LogWriter
+	next   *writerElement
 }

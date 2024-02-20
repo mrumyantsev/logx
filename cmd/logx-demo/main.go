@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/mrumyantsev/logx"
@@ -11,83 +10,79 @@ import (
 )
 
 const (
-	_WRITER_ACCEPTING_EXAMPLE string = "| %s | %s | %s | %s |"
+	receiveTmpl = "| %s | %s | %s | %s |"
 )
 
 func main() {
-	logCfg := &logx.Config{
-		TimeFormat:      time.Kitchen,
-		IsDisableColors: false,
-		OutputStream:    os.Stdout,
-	}
+	// create log writers
+	file := NewFileWriter("logs.txt")
+	mySql := NewDatabaseWriter("MySQL")
+	postgreSql := NewDatabaseWriter("PostgreSQL")
 
-	log.ApplyConfig(logCfg)
-
-	file := &FileController{"logs.txt  ", nil}
-	mySql := &DatabaseController{"MySQL     "}
-	postgreSql := &DatabaseController{"PostgreSQL"}
-
-	log.AddWriter(postgreSql)
-	log.AddWriter(mySql)
+	log.AddWriters(postgreSql, mySql)
 
 	log.Info("message")
 
-	log.AddWriter(file)
+	log.AddWriters(file)
 
 	log.Debug("message")
 
-	log.RemoveWriter(mySql)
-	log.RemoveWriter(file)
+	log.RemoveWriters(mySql, file)
 
 	log.Warn("message")
 
-	// an error is put to a writer to
-	// break it and show, how the logger
-	// will handle that situation
+	// make an error in the writer, to break it and to show, how the
+	// logger will answer to terminal
 	file.ProvokeError()
 
-	log.RemoveWriter(postgreSql)
-	log.AddWriter(mySql)
-	log.AddWriter(file)
+	log.RemoveWriters(postgreSql)
+	log.AddWriters(mySql, file)
 
 	log.Error("description", errors.New("some error occurred"))
 
-	log.RemoveWriter(mySql)
-	log.AddWriter(postgreSql)
-	log.AddWriter(file)
+	log.RemoveWriters(mySql)
+	log.AddWriters(postgreSql, file)
 
 	log.Fatal("description", errors.New("app crashed, as was planned"))
 }
 
-type FileController struct {
+type FileWriter struct {
 	Destination string
 	err         error
 }
 
-func (f *FileController) WriteLog(datetime time.Time, levelId uint8, message string) error {
+func NewFileWriter(dest string) *FileWriter {
+	return &FileWriter{Destination: dest}
+}
+
+func (f *FileWriter) WriteLog(time time.Time, level logx.LogLevel, msg string) error {
 	if f.err != nil {
 		return f.err
 	}
 
 	fmt.Println(fmt.Sprintf(
-		_WRITER_ACCEPTING_EXAMPLE, f.Destination, datetime.Format(logx.TimeFormat), logx.GetLevelText(levelId), message))
+		receiveTmpl, f.Destination, time.Format(logx.TimeFormat), logx.LevelText(level), msg))
 
 	return nil
 }
 
-func (f *FileController) ProvokeError() {
+func (f *FileWriter) ProvokeError() {
 	f.err = errors.New("i can't write this log to file")
 
 	fmt.Println("*** An error is provoken to crash the file writer, ha-ha! ***")
 }
 
-type DatabaseController struct {
+type DatabaseWriter struct {
 	Destination string
 }
 
-func (d *DatabaseController) WriteLog(datetime time.Time, levelId uint8, message string) error {
+func NewDatabaseWriter(dest string) *DatabaseWriter {
+	return &DatabaseWriter{Destination: dest}
+}
+
+func (d *DatabaseWriter) WriteLog(time time.Time, level logx.LogLevel, msg string) error {
 	fmt.Println(fmt.Sprintf(
-		_WRITER_ACCEPTING_EXAMPLE, d.Destination, datetime.Format(logx.TimeFormat), logx.GetLevelText(levelId), message))
+		receiveTmpl, d.Destination, time.Format(logx.TimeFormat), logx.LevelText(level), msg))
 
 	return nil
 }

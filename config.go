@@ -1,43 +1,42 @@
 package logx
 
-import (
-	"os"
-)
+import "os"
 
-// Multilog configurational structure.
+// Configuration for LogX.
 type Config struct {
-	// Disables debug logs to be executed.
+	// Disable debug logs from running.
 	// Default: false
 	IsDisableDebugLogs bool
 
-	// Disables warn logs to be executed.
+	// Disable warn logs from running.
 	// Default: false
 	IsDisableWarnLogs bool
 
-	// Disables default console logger.
+	// Disable standard logger from writing logs to data stream.
 	// Default: false
-	IsDisableDefaultConsoleLogger bool
+	IsDisableStandardLogger bool
 
-	// Disables colored text in the stream logs.
+	// Disable colored text in standard logger messages.
 	// Default: false
 	IsDisableColors bool
 
-	// Defines datetime format in the stream logs.
-	// Default: "2006-01-02T15:04:05-07:00"
+	// Define time format in standard logger messages.
+	// Default: "2006-01-02 15:04:05 -0700"
 	TimeFormat string
 
-	// Chooses output data stream for the stream logs.
+	// Define output data stream for standard logger.
 	// Default: os.Stderr
-	OutputStream *os.File
+	Output *os.File
 }
 
-// Initialize fields, that were not set by user, with its default values.
+// Initialize fields, that were not redefined by user, with default
+// values.
 func (c *Config) InitEmptyFields() {
 	if c.TimeFormat == EmptyString {
 		c.TimeFormat = TimeFormat
 	}
 
-	if c.OutputStream == nil {
-		c.OutputStream = GetOutputStream()
+	if c.Output == nil {
+		c.Output = Output()
 	}
 }
