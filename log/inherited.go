@@ -52,7 +52,7 @@ func Writer() *os.File {
 // handled in the manner of fmt.Print.
 //
 // Alias for log.Info()
-func Print(v ...any) {
+func Print(v ...interface{}) {
 	time := time.Now()
 	msg := fmt.Sprint(v...)
 
@@ -69,7 +69,7 @@ func Print(v ...any) {
 // handled in the manner of fmt.Printf.
 //
 // Alias for log.Info()
-func Printf(format string, v ...any) {
+func Printf(format string, v ...interface{}) {
 	time := time.Now()
 	msg := fmt.Sprintf(format, v...)
 
@@ -86,7 +86,7 @@ func Printf(format string, v ...any) {
 // handled in the manner of fmt.Println.
 //
 // Alias for log.Info()
-func Println(v ...any) {
+func Println(v ...interface{}) {
 	time := time.Now()
 	msg := fmt.Sprint(v...)
 
@@ -102,7 +102,7 @@ func Println(v ...any) {
 // Fatalf is equivalent to [Printf] followed by a call to os.Exit(logx.FatalExitCode).
 //
 // Alias for log.Fatal()
-func Fatalf(format string, v ...any) {
+func Fatalf(format string, v ...interface{}) {
 	time := time.Now()
 	msg := fmt.Sprintf(format, v...)
 
@@ -118,7 +118,7 @@ func Fatalf(format string, v ...any) {
 // Fatalln is equivalent to [Println] followed by a call to os.Exit(logx.FatalExitCode).
 //
 // Alias for log.Fatal()
-func Fatalln(v ...any) {
+func Fatalln(v ...interface{}) {
 	time := time.Now()
 	msg := fmt.Sprint(v...)
 
@@ -134,7 +134,7 @@ func Fatalln(v ...any) {
 // Panicf is equivalent to [Printf] followed by a call to panic().
 //
 // Alias for log.Panic()
-func Panicf(format string, v ...any) {
+func Panicf(format string, v ...interface{}) {
 	time := time.Now()
 	msg := fmt.Sprintf(format, v...)
 
@@ -150,7 +150,7 @@ func Panicf(format string, v ...any) {
 // Panicln is equivalent to [Println] followed by a call to panic().
 //
 // Alias for log.Panic()
-func Panicln(v ...any) {
+func Panicln(v ...interface{}) {
 	time := time.Now()
 	msg := fmt.Sprint(v...)
 
