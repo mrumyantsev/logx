@@ -135,10 +135,13 @@ func Warn(msg string) {
 }
 
 // Error writes error level log by standard LogX logger, then writes it
-// by log writers, if they were added.
+// by log writers, if they were added. Value of err may be nil.
 func Error(desc string, err error) {
 	time := time.Now()
-	desc += errorInsert + err.Error()
+
+	if err != nil {
+		desc += errorInsert + err.Error()
+	}
 
 	if std != nil {
 		std.WriteLog(time, logx.ErrorLevel, desc)
@@ -151,10 +154,13 @@ func Error(desc string, err error) {
 
 // Fatal writes fatal level log by standard LogX logger, then writes it
 // by log writers, if they were added, and ends the program with exit
-// code 1.
+// code 1. Value of err may be nil.
 func Fatal(desc string, err error) {
 	time := time.Now()
-	desc += errorInsert + err.Error()
+
+	if err != nil {
+		desc += errorInsert + err.Error()
+	}
 
 	if std != nil {
 		std.WriteLog(time, logx.FatalLevel, desc)
@@ -169,10 +175,13 @@ func Fatal(desc string, err error) {
 
 // FatalWithCode writes fatal level log by standard LogX logger, then
 // writes it by log writers, if they were added, and ends the program
-// with specified exit code.
+// with specified exit code. Value of err may be nil.
 func FatalWithCode(desc string, err error, exitCode int) {
 	time := time.Now()
-	desc += errorInsert + err.Error()
+
+	if err != nil {
+		desc += errorInsert + err.Error()
+	}
 
 	if std != nil {
 		std.WriteLog(time, logx.FatalLevel, desc)
@@ -187,10 +196,13 @@ func FatalWithCode(desc string, err error, exitCode int) {
 
 // Panic writes panic level log by standard LogX logger, then writes it
 // by log writers, if they were added, then calls the standard panic in
-// current goroutine.
+// current goroutine. Value of err may be nil.
 func Panic(desc string, err error) {
 	time := time.Now()
-	desc += errorInsert + err.Error()
+
+	if err != nil {
+		desc += errorInsert + err.Error()
+	}
 
 	if std != nil {
 		std.WriteLog(time, logx.PanicLevel, desc)
