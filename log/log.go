@@ -55,21 +55,29 @@ func ApplyConfig(cfg *logx.Config) {
 	std.SetOutput(cfg.Output)
 }
 
-// AddWriters adds log writers to LogX. Panics, if passed nil or slice
-// of nils.
+// AddWriters adds log writers to LogX. Ignores passed nil values.
 func AddWriters(w ...logx.LogWriter) {
 	for _, writer := range w {
+		if writer == nil {
+			continue
+		}
+
 		addWriter(writer)
 	}
 }
 
-// RemoveWriters removes log writers from LogX.
+// RemoveWriters removes log writers from LogX. Ignores passed nil
+// values.
 func RemoveWriters(w ...logx.LogWriter) {
 	if headWriter == nil {
 		return
 	}
 
 	for _, writer := range w {
+		if writer == nil {
+			continue
+		}
+
 		removeWriter(writer)
 	}
 }
