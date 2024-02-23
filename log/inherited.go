@@ -88,7 +88,8 @@ func Printf(format string, v ...interface{}) {
 // Alias for log.Info()
 func Println(v ...interface{}) {
 	time := time.Now()
-	msg := fmt.Sprint(v...)
+	msg := fmt.Sprintln(v...)
+	msg = msg[:len(msg)-1]
 
 	if std != nil {
 		std.WriteLog(time, logx.InfoLevel, msg)
@@ -120,7 +121,8 @@ func Fatalf(format string, v ...interface{}) {
 // Alias for log.Fatal()
 func Fatalln(v ...interface{}) {
 	time := time.Now()
-	msg := fmt.Sprint(v...)
+	msg := fmt.Sprintln(v...)
+	msg = msg[:len(msg)-1]
 
 	if std != nil {
 		std.WriteLog(time, logx.FatalLevel, msg)
@@ -152,7 +154,8 @@ func Panicf(format string, v ...interface{}) {
 // Alias for log.Panic()
 func Panicln(v ...interface{}) {
 	time := time.Now()
-	msg := fmt.Sprint(v...)
+	msg := fmt.Sprintln(v...)
+	msg = msg[:len(msg)-1]
 
 	if std != nil {
 		std.WriteLog(time, logx.PanicLevel, msg)
