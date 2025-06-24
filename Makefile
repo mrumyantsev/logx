@@ -1,4 +1,5 @@
 .SILENT:
+.IGNORE:
 .DEFAULT_GOAL := demo
 
 .PHONY: demo
