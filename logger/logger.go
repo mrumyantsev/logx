@@ -2,6 +2,7 @@ package logger
 
 import (
 	"os"
+	"strings"
 	"time"
 
 	"github.com/mrumyantsev/logx"
@@ -44,36 +45,33 @@ func (l *Logger) DisableColors() {
 
 // WriteLog writes the log message to output data stream.
 func (l *Logger) WriteLog(time time.Time, level logx.LogLevel, msg string) error {
+	var sb strings.Builder
 	var err error
 
 	if l.isDisableColors {
-		_, err = l.output.Write(
-			[]byte(
-				time.Format(l.timeFormat) +
-					logx.Space +
-					logx.LevelText(level) +
-					logx.Space +
-					msg +
-					logx.EndOfLine,
-			),
-		)
+		sb.WriteString(time.Format(l.timeFormat))
+		sb.WriteString(logx.Space)
+		sb.WriteString(logx.LevelText(level))
+		sb.WriteString(logx.Space)
+		sb.WriteString(msg)
+		sb.WriteString(logx.EndOfLine)
+
+		_, err = l.output.WriteString(sb.String())
 
 		return err
 	}
 
-	_, err = l.output.Write(
-		[]byte(
-			logx.GrayColor +
-				time.Format(l.timeFormat) +
-				logx.Space +
-				logx.LevelColor(level) +
-				logx.LevelText(level) +
-				logx.Space +
-				logx.RegularColor +
-				msg +
-				logx.EndOfLine,
-		),
-	)
+	sb.WriteString(logx.GrayColor)
+	sb.WriteString(time.Format(l.timeFormat))
+	sb.WriteString(logx.Space)
+	sb.WriteString(logx.LevelColor(level))
+	sb.WriteString(logx.LevelText(level))
+	sb.WriteString(logx.Space)
+	sb.WriteString(logx.RegularColor)
+	sb.WriteString(msg)
+	sb.WriteString(logx.EndOfLine)
+
+	_, err = l.output.WriteString(sb.String())
 
 	return err
 }

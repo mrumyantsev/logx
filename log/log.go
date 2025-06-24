@@ -3,6 +3,7 @@ package log
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/mrumyantsev/logx"
@@ -260,18 +261,17 @@ func writeByWriters(time time.Time, level logx.LogLevel, msg string) {
 
 // writeToStream writes the log message to default output data stream.
 func writeToStream(time time.Time, level logx.LogLevel, msg string) error {
+	var sb strings.Builder
 	var err error
 
-	_, err = logx.Output().Write(
-		[]byte(
-			time.Format(logx.TimeFormat) +
-				logx.Space +
-				logx.LevelText(level) +
-				logx.Space +
-				msg +
-				logx.EndOfLine,
-		),
-	)
+	sb.WriteString(time.Format(logx.TimeFormat))
+	sb.WriteString(logx.Space)
+	sb.WriteString(logx.LevelText(level))
+	sb.WriteString(logx.Space)
+	sb.WriteString(msg)
+	sb.WriteString(logx.EndOfLine)
+
+	_, err = logx.Output().WriteString(sb.String())
 
 	return err
 }
