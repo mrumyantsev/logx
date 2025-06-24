@@ -3,8 +3,8 @@
 
 .PHONY: demo
 demo:
-	go run ./cmd/logx-demo
+	go run ./cmd/demo
 
 .PHONY: demo2
 demo2:
-	go run ./cmd/logx-demo2
+	go run ./cmd/demo2
